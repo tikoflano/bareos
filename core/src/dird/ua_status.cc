@@ -525,110 +525,20 @@ bail_out:
   return retval;
 }
 
-static void DoSchedulerStatus(UaContext* ua)
+static constexpr int seconds_per_hour = 60 * 60;
+static constexpr int seconds_per_day = seconds_per_hour * 24;
+
+static void BuildAnOverview(UaContext* ua,
+                            int days,
+                            ClientResource* client,
+                            JobResource* job,
+                            ScheduleResource* sched,
+                            bool schedulegiven,
+                            char schedulename[MAX_NAME_LENGTH])
 {
-  int i;
-  int max_date_len = 0;
-  int days = DEFAULT_STATUS_SCHED_DAYS; /* Default days for preview */
-  bool schedulegiven = false;
-  time_t time_to_check, now, start, stop;
-  char schedulename[MAX_NAME_LENGTH];
-  const int seconds_per_day = 86400; /* Number of seconds in one day */
-  const int seconds_per_hour = 3600; /* Number of seconds in one hour */
-  ClientResource* client = NULL;
-  JobResource* job = NULL;
-  ScheduleResource* sched;
-  PoolMem overview(PM_MESSAGE);
+  time_t now = time(NULL);
+  time_t start{}, stop{};
 
-  now = time(NULL); /* Initialize to now */
-  time_to_check = now;
-
-  i = FindArgWithValue(ua, NT_("days"));
-  if (i >= 0) {
-    days = atoi(ua->argv[i]);
-    if (((days < -366) || (days > 366)) && !ua->api) {
-      ua->SendMsg(_(
-          "Ignoring invalid value for days. Allowed is -366 < days < 366.\n"));
-      days = DEFAULT_STATUS_SCHED_DAYS;
-    }
-  }
-
-  /*
-   * Schedule given ?
-   */
-  i = FindArgWithValue(ua, NT_("schedule"));
-  if (i >= 0) {
-    bstrncpy(schedulename, ua->argv[i], sizeof(schedulename));
-    schedulegiven = true;
-  }
-
-  /*
-   * Client given ?
-   */
-  i = FindArgWithValue(ua, NT_("client"));
-  if (i >= 0) { client = get_client_resource(ua); }
-
-  /*
-   * Jobname given ?
-   */
-  i = FindArgWithValue(ua, NT_("job"));
-  if (i >= 0) {
-    job = ua->GetJobResWithName(ua->argv[i]);
-
-    /*
-     * If a bogus jobname was given ask for it interactively.
-     */
-    if (!job) { job = select_job_resource(ua); }
-  }
-
-  ua->SendMsg("Scheduler Jobs:\n\n");
-  ua->SendMsg("Schedule               Jobs Triggered\n");
-  ua->SendMsg("===========================================================\n");
-
-  LockRes(my_config);
-  foreach_res (sched, R_SCHEDULE) {
-    int cnt = 0;
-
-    if (!schedulegiven && !sched->enabled) { continue; }
-
-    if (!ua->AclAccessOk(Schedule_ACL, sched->resource_name_)) { continue; }
-
-    if (schedulegiven) {
-      if (!bstrcmp(sched->resource_name_, schedulename)) { continue; }
-    }
-
-    if (job) {
-      if (job->schedule &&
-          bstrcmp(sched->resource_name_, job->schedule->resource_name_)) {
-        if (cnt++ == 0) { ua->SendMsg("%s\n", sched->resource_name_); }
-        ua->SendMsg("                       %s\n", job->resource_name_);
-      }
-    } else {
-      foreach_res (job, R_JOB) {
-        if (!ua->AclAccessOk(Job_ACL, job->resource_name_)) { continue; }
-
-        if (client && job->client != client) { continue; }
-
-        if (job->schedule &&
-            bstrcmp(sched->resource_name_, job->schedule->resource_name_)) {
-          if (cnt++ == 0) { ua->SendMsg("%s\n", sched->resource_name_); }
-          if (job->enabled && (!job->client || job->client->enabled)) {
-            ua->SendMsg("                       %s\n", job->resource_name_);
-          } else {
-            ua->SendMsg("                       %s (disabled)\n",
-                        job->resource_name_);
-          }
-        }
-      }
-    }
-
-    if (cnt > 0) { ua->SendMsg("\n"); }
-  }
-  UnlockRes(my_config);
-
-  /*
-   * Build an overview.
-   */
   if (days > 0) { /* future */
     start = now;
     stop = now + (days * seconds_per_day);
@@ -637,8 +547,11 @@ static void DoSchedulerStatus(UaContext* ua)
     stop = now;
   }
 
+  int max_date_len{};
+  PoolMem overview(PM_MESSAGE);
+
 start_again:
-  time_to_check = start;
+  time_t time_to_check = start;
   while (time_to_check < stop) {
     if (client || job) {
       /*
@@ -702,6 +615,91 @@ start_again:
       "==============================================================\n");
   ua->SendMsg(overview.c_str());
   ua->SendMsg("====\n");
+}
+
+static void DoSchedulerStatus(UaContext* ua)
+{
+  int days{DEFAULT_STATUS_SCHED_DAYS};
+
+  int i = FindArgWithValue(ua, NT_("days"));
+
+  if (i >= 0) {
+    days = atoi(ua->argv[i]);
+    if (((days < -366) || (days > 366)) && !ua->api) {
+      ua->SendMsg(_(
+          "Ignoring invalid value for days. Allowed is -366 < days < 366.\n"));
+      days = DEFAULT_STATUS_SCHED_DAYS;
+    }
+  }
+
+  bool schedulegiven{false};
+  char schedulename[MAX_NAME_LENGTH]{};
+
+  i = FindArgWithValue(ua, NT_("schedule"));
+  if (i >= 0) {
+    bstrncpy(schedulename, ua->argv[i], sizeof(schedulename));
+    schedulegiven = true;
+  }
+
+  ClientResource* client{};
+  i = FindArgWithValue(ua, NT_("client"));
+  if (i >= 0) { client = get_client_resource(ua); }
+
+  JobResource* job{};
+  i = FindArgWithValue(ua, NT_("job"));
+  if (i >= 0) {
+    job = ua->GetJobResWithName(ua->argv[i]);
+
+    if (job == nullptr) { job = select_job_resource(ua); }
+  }
+
+  ua->SendMsg("Scheduler Jobs:\n\n");
+  ua->SendMsg("Schedule               Jobs Triggered\n");
+  ua->SendMsg("===========================================================\n");
+
+  LockRes(my_config);
+  ScheduleResource* sched{};
+  foreach_res (sched, R_SCHEDULE) {
+    int cnt = 0;
+
+    if (!schedulegiven && !sched->enabled) { continue; }
+
+    if (!ua->AclAccessOk(Schedule_ACL, sched->resource_name_)) { continue; }
+
+    if (schedulegiven) {
+      if (!bstrcmp(sched->resource_name_, schedulename)) { continue; }
+    }
+
+    if (job) {
+      if (job->schedule &&
+          bstrcmp(sched->resource_name_, job->schedule->resource_name_)) {
+        if (cnt++ == 0) { ua->SendMsg("%s\n", sched->resource_name_); }
+        ua->SendMsg("                       %s\n", job->resource_name_);
+      }
+    } else {
+      foreach_res (job, R_JOB) {
+        if (!ua->AclAccessOk(Job_ACL, job->resource_name_)) { continue; }
+
+        if (client && job->client != client) { continue; }
+
+        if (job->schedule &&
+            bstrcmp(sched->resource_name_, job->schedule->resource_name_)) {
+          if (cnt++ == 0) { ua->SendMsg("%s\n", sched->resource_name_); }
+          if (job->enabled && (!job->client || job->client->enabled)) {
+            ua->SendMsg("                       %s\n", job->resource_name_);
+          } else {
+            ua->SendMsg("                       %s (disabled)\n",
+                        job->resource_name_);
+          }
+        }
+      }
+    }
+
+    if (cnt > 0) { ua->SendMsg("\n"); }
+  }
+  UnlockRes(my_config);
+
+  BuildAnOverview(ua, days, client, job, sched, schedulegiven, schedulename);
 }
 
 static void DoDirectorStatus(UaContext* ua)
