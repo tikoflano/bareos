@@ -371,109 +371,85 @@ void ListDirStatusHeader(UaContext* ua)
   if (len > 0) { ua->SendMsg("%s\n", msg.c_str()); }
 }
 
-static bool show_scheduled_preview(UaContext* ua,
-                                   ScheduleResource* sched,
-                                   PoolMem& overview,
-                                   int* max_date_len,
-                                   time_t time_to_check)
+static bool show_scheduled_preview(ScheduleResource* sched,
+                                   time_t time_to_check,
+                                   std::string& overview,
+                                   int& max_date_len)
 {
-  int date_len;
-  char dt[MAX_TIME_LENGTH];
-  time_t runtime;
-  RunResource* run;
-  PoolMem temp(PM_NAME);
-
   RunHourValidator run_hour_validator(time_to_check);
 
-  for (run = sched->run; run; run = run->next) {
-    bool run_now;
-    int cnt = 0;
-
-    run_now = run_hour_validator.TriggersOn(run->date_time_bitfield);
+  for (RunResource* run = sched->run; run; run = run->next) {
+    bool run_now{run_hour_validator.TriggersOn(run->date_time_bitfield)};
 
     if (run_now) {
-      /*
-       * Find time (time_t) job is to be run
-       */
       struct tm tm;
       Blocaltime(&time_to_check, &tm); /* Reset tm structure */
       tm.tm_min = run->minute;         /* Set run minute */
       tm.tm_sec = 0;                   /* Zero secs */
 
-      /*
-       * Convert the time into a user parsable string.
-       * As we use locale specific strings for weekday and month we
-       * need to keep track of the longest data string used.
-       */
-      runtime = mktime(&tm);
-      bstrftime_wd(dt, sizeof(dt), runtime);
-      date_len = strlen(dt);
-      if (date_len > *max_date_len) {
-        if (*max_date_len == 0) {
-          /*
-           * When the datelen changes during the loop the locale generates a
-           * date string that is variable. Only thing we can do about that is
-           * start from scratch again. We invoke this by return false from this
-           * function.
-           */
-          *max_date_len = date_len;
-          PmStrcpy(overview, "");
-          return false;
-        } else {
-          /*
-           * This is the first determined length we use this until we are proven
-           * wrong.
-           */
-          *max_date_len = date_len;
-        }
+      time_t runtime = mktime(&tm);
+      std::vector<char> dt(MAX_TIME_LENGTH);
+
+      bstrftime_wd(dt.data(), dt.size(), runtime);
+
+      int length_of_date_time_string = static_cast<int>(strlen(dt.data()));
+
+      if (length_of_date_time_string > max_date_len) {
+        max_date_len = length_of_date_time_string;
+        return false;
       }
 
-      Mmsg(temp, "%-*s  %-22.22s  ", *max_date_len, dt, sched->resource_name_);
-      PmStrcat(overview, temp.c_str());
+      std::vector<char> temp(200);
+
+      sprintf(temp.data(), "%-*s  %-22.22s  ", max_date_len, dt.data(),
+              sched->resource_name_);
+      overview += temp.data();
+
+      int cnt{};
 
       if (run->level) {
-        if (cnt++ > 0) { PmStrcat(overview, " "); }
-        Mmsg(temp, "Level=%s", JobLevelToString(run->level));
-        PmStrcat(overview, temp.c_str());
+        if (cnt++ > 0) { overview += " "; }
+        sprintf(temp.data(), "Level=%s", JobLevelToString(run->level));
+        overview += temp.data();
       }
 
       if (run->Priority) {
-        if (cnt++ > 0) { PmStrcat(overview, " "); }
-        Mmsg(temp, "Priority=%d", run->Priority);
-        PmStrcat(overview, temp.c_str());
+        if (cnt++ > 0) { overview += " "; }
+        sprintf(temp.data(), "Priority=%d", run->Priority);
+        overview += temp.data();
       }
 
       if (run->spool_data_set) {
-        if (cnt++ > 0) { PmStrcat(overview, " "); }
-        Mmsg(temp, "Spool Data=%d", run->spool_data);
-        PmStrcat(overview, temp.c_str());
+        if (cnt++ > 0) { overview += " "; }
+        sprintf(temp.data(), "Spool Data=%d", run->spool_data);
+        overview += temp.data();
       }
 
       if (run->accurate_set) {
-        if (cnt++ > 0) { PmStrcat(overview, " "); }
-        Mmsg(temp, "Accurate=%d", run->accurate);
-        PmStrcat(overview, temp.c_str());
+        if (cnt++ > 0) { overview += " "; }
+        sprintf(temp.data(), "Accurate=%d", run->accurate);
+        overview += temp.data();
       }
 
       if (run->pool) {
-        if (cnt++ > 0) { PmStrcat(overview, " "); }
-        Mmsg(temp, "Pool=%s", run->pool->resource_name_);
-        PmStrcat(overview, temp.c_str());
+        if (cnt++ > 0) { overview += " "; }
+        sprintf(temp.data(), "Pool=%s", run->pool->resource_name_);
+        overview += temp.data();
       }
 
       if (run->storage) {
-        if (cnt++ > 0) { PmStrcat(overview, " "); }
-        Mmsg(temp, "Storage=%s", run->storage->resource_name_);
-        PmStrcat(overview, temp.c_str());
+        if (cnt++ > 0) { overview += " "; }
+        sprintf(temp.data(), "Storage=%s", run->storage->resource_name_);
+        overview += temp.data();
       }
 
       if (run->msgs) {
-        if (cnt++ > 0) { PmStrcat(overview, " "); }
-        Mmsg(temp, "Messages=%s", run->msgs->resource_name_);
-        PmStrcat(overview, temp.c_str());
+        if (cnt++ > 0) { overview += " "; }
+        sprintf(temp.data(), "Messages=%s", run->msgs->resource_name_);
+        overview += temp.data();
       }
 
-      PmStrcat(overview, "\n");
+      overview += "\n";
     }
   }
 
@@ -548,7 +524,7 @@ static void BuildAnOverview(UaContext* ua,
   }
 
   int max_date_len{};
-  PoolMem overview(PM_MESSAGE);
+  std::string overview;
 
 start_again:
   time_t time_to_check = start;
@@ -559,8 +535,8 @@ start_again:
        */
       if (job) {
         if (job->schedule) {
-          if (!show_scheduled_preview(ua, job->schedule, overview,
-                                      &max_date_len, time_to_check)) {
+          if (!show_scheduled_preview(job->schedule, time_to_check, overview,
+                                      max_date_len)) {
             goto start_again;
           }
         }
@@ -570,8 +546,8 @@ start_again:
           if (!ua->AclAccessOk(Job_ACL, job->resource_name_)) { continue; }
 
           if (job->schedule && job->client == client) {
-            if (!show_scheduled_preview(ua, job->schedule, overview,
-                                        &max_date_len, time_to_check)) {
+            if (!show_scheduled_preview(job->schedule, time_to_check, overview,
+                                        max_date_len)) {
               job = NULL;
               UnlockRes(my_config);
               goto start_again;
@@ -595,8 +571,8 @@ start_again:
           if (!bstrcmp(sched->resource_name_, schedulename)) { continue; }
         }
 
-        if (!show_scheduled_preview(ua, sched, overview, &max_date_len,
-                                    time_to_check)) {
+        if (!show_scheduled_preview(sched, time_to_check, overview,
+                                    max_date_len)) {
           UnlockRes(my_config);
           goto start_again;
         }
