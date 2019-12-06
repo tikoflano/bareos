@@ -47,6 +47,7 @@
 #include "lib/edit.h"
 
 #include <cassert>
+#include <algorithm>
 
 namespace directordaemon {
 
@@ -867,6 +868,24 @@ static void StoreFname(LEX* lc,
   ScanToEol(lc);
 }  // namespace directordaemon
 
+static void RemoveAllFromString(std::string& str, char c)
+{
+  do {
+    std::string::iterator pos{std::find(str.begin(), str.end(), c)};
+    if (pos == str.end()) { break; }
+    str.erase(pos);
+  } while (true);
+}
+
+static void RemoveAllNewlineAndBlankCharacters(char* c_str)
+{
+  std::string tmp{c_str};
+  RemoveAllFromString(tmp, ' ');
+  RemoveAllFromString(tmp, '\n');
+  RemoveAllFromString(tmp, '\r');
+  strcpy(c_str, tmp.c_str());
+}
+
 /**
  * Store Filename info. Note, for minor efficiency reasons, we
  * always increase the name buffer by 10 items because we expect
@@ -907,6 +926,9 @@ static void StorePluginName(LEX* lc,
         if (res_incexe->plugin_list.size() == 0) {
           res_incexe->plugin_list.init(10, true);
         }
+
+        RemoveAllNewlineAndBlankCharacters(lc->str);
+
         res_incexe->plugin_list.append(strdup(lc->str));
         Dmsg1(900, "Add to plugin_list %s\n", lc->str);
         break;
