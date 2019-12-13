@@ -20,9 +20,6 @@ import ovirtsdk4.types as types
 
 import ssl
 
-# temporary for debugging
-import inspect
-
 from httplib import HTTPSConnection
 
 try:
