@@ -97,7 +97,7 @@ The two entry points are:
 
 ::
 
-    bRC loadPlugin(bInfo *lbinfo, bFuncs *lbfuncs, pInfo **pinfo, pFuncs **pfuncs)
+    bRC loadPlugin(bFuncs *lbfuncs, pInfo **pinfo, pFuncs **pfuncs)
 
     and
 
@@ -160,23 +160,9 @@ must return to Bareos. The call is:
 
 ::
 
-    bRC loadPlugin(bInfo *lbinfo, bFuncs *lbfuncs, pInfo **pinfo, pFuncs **pfuncs)
+    bRC loadPlugin(bFuncs *lbfuncs, pInfo **pinfo, pFuncs **pfuncs)
 
 and the arguments are:
-
-lbinfo
-    This is information about Bareos in general. Currently, the only
-    value defined in the bInfo structure is the version, which is the
-    Bareos plugin interface version, currently defined as 1. The
-    **size** is set to the byte size of the structure. The exact
-    definition of the bInfo structure as of this writing is:
-
-    ::
-
-        typedef struct s_bareosInfo {
-           uint32_t size;
-           uint32_t version;
-        } bInfo;
 
 lbfuncs
     The bFuncs structure defines the callback entry points within Bareos

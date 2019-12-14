@@ -47,7 +47,6 @@ static bRC setXattr(bpContext* ctx, xattr_pkt* xp);
 
 /* Pointers to Bareos functions */
 static bFuncs* bfuncs = NULL;
-static bInfo* binfo = NULL;
 
 static genpInfo pluginInfo = {sizeof(pluginInfo), FD_PLUGIN_INTERFACE_VERSION,
                               FD_PLUGIN_MAGIC,    PLUGIN_LICENSE,
@@ -71,13 +70,9 @@ extern "C" {
 /*
  * Plugin called here when it is first loaded
  */
-bRC loadPlugin(bInfo* lbinfo,
-               bFuncs* lbfuncs,
-               genpInfo** pinfo,
-               pFuncs** pfuncs)
+bRC loadPlugin(bFuncs* lbfuncs, genpInfo** pinfo, pFuncs** pfuncs)
 {
   bfuncs = lbfuncs; /* set Bareos funct pointers */
-  binfo = lbinfo;
   printf("plugin: Loaded: size=%d version=%d\n", bfuncs->size, bfuncs->version);
 
   *pinfo = &pluginInfo;   /* return pointer to our info */

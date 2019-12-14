@@ -66,9 +66,6 @@ static bRC bareosDebugMsg(bpContext* ctx,
                           ...);
 static bool IsPluginCompatible(Plugin* plugin);
 
-/* BAREOS info */
-static bDirInfo binfo = {sizeof(bDirFuncs), DIR_PLUGIN_INTERFACE_VERSION};
-
 /* BAREOS entry points */
 static bDirFuncs bfuncs = {sizeof(bDirFuncs),      DIR_PLUGIN_INTERFACE_VERSION,
                            bareosRegisterEvents,   bareosUnRegisterEvents,
@@ -293,8 +290,8 @@ void LoadDirPlugins(const char* plugin_dir, alist* plugin_names)
   }
 
   dird_plugin_list = new alist(10, not_owned_by_alist);
-  if (!LoadPlugins((void*)&binfo, (void*)&bfuncs, dird_plugin_list, plugin_dir,
-                   plugin_names, plugin_type, IsPluginCompatible)) {
+  if (!LoadPlugins((void*)&bfuncs, dird_plugin_list, plugin_dir, plugin_names,
+                   plugin_type, IsPluginCompatible)) {
     /* Either none found, or some error */
     if (dird_plugin_list->size() == 0) {
       delete dird_plugin_list;
@@ -613,8 +610,7 @@ static bRC bareosGetValue(bpContext* ctx, brDirVariable var, void* value)
       case bDirVarNumVols: {
         PoolDbRecord pr;
 
-        bstrncpy(pr.Name, jcr->impl->res.pool->resource_name_,
-                 sizeof(pr.Name));
+        bstrncpy(pr.Name, jcr->impl->res.pool->resource_name_, sizeof(pr.Name));
         if (!jcr->db->GetPoolRecord(jcr, &pr)) { retval = bRC_Error; }
         *((int*)value) = pr.NumVols;
         Dmsg1(debuglevel, "dir-plugin: return bDirVarNumVols=%d\n", pr.NumVols);

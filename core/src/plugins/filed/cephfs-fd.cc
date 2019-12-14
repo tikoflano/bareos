@@ -77,7 +77,6 @@ static bRC end_restore_job(bpContext* ctx, void* value);
  * Pointers to Bareos functions
  */
 static bFuncs* bfuncs = NULL;
-static bInfo* binfo = NULL;
 
 /**
  * Plugin Information block
@@ -179,13 +178,11 @@ extern "C" {
  *
  * External entry point called by Bareos to "load" the plugin
  */
-bRC loadPlugin(bInfo* lbinfo,
-               bFuncs* lbfuncs,
+bRC loadPlugin(bFuncs* lbfuncs,
                genpInfo** pinfo,
                pFuncs** pfuncs)
 {
   bfuncs = lbfuncs; /* set Bareos funct pointers */
-  binfo = lbinfo;
   *pinfo = &pluginInfo;   /* return pointer to our info */
   *pfuncs = &pluginFuncs; /* return pointer to our functions */
 

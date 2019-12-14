@@ -135,9 +135,6 @@ static boffset_t MyPluginBlseek(BareosWinFilePacket* bfd,
                                 boffset_t offset,
                                 int whence);
 
-/* Bareos info */
-static bInfo binfo = {sizeof(bInfo), FD_PLUGIN_INTERFACE_VERSION};
-
 /* Bareos entry points */
 static bFuncs bfuncs = {sizeof(bFuncs),
                         FD_PLUGIN_INTERFACE_VERSION,
@@ -1682,8 +1679,8 @@ void LoadFdPlugins(const char* plugin_dir, alist* plugin_names)
   }
 
   fd_plugin_list = new alist(10, not_owned_by_alist);
-  if (!LoadPlugins((void*)&binfo, (void*)&bfuncs, fd_plugin_list, plugin_dir,
-                   plugin_names, plugin_type, IsPluginCompatible)) {
+  if (!LoadPlugins((void*)&bfuncs, fd_plugin_list, plugin_dir, plugin_names,
+                   plugin_type, IsPluginCompatible)) {
     /*
      * Either none found, or some error
      */

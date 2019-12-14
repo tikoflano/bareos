@@ -117,8 +117,7 @@ static void ClosePlugin(Plugin* plugin)
  * Load a specific plugin and check if the plugin had the correct
  * entry points, the license is compatible and the initialize the plugin.
  */
-static bool load_a_plugin(void* binfo,
-                          void* bfuncs,
+static bool load_a_plugin(void* bfuncs,
                           const char* plugin_pathname,
                           const char* plugin_name,
                           const char* type,
@@ -179,7 +178,7 @@ static bool load_a_plugin(void* binfo,
   /*
    * Initialize the plugin
    */
-  if (loadPlugin(binfo, bfuncs, &plugin->pinfo, &plugin->pfuncs) != bRC_OK) {
+  if (loadPlugin(bfuncs, &plugin->pinfo, &plugin->pfuncs) != bRC_OK) {
     ClosePlugin(plugin);
 
     return false;
@@ -203,8 +202,7 @@ static bool load_a_plugin(void* binfo,
  * Or when plugin_names is give it has a list of plugins
  * to load from the specified directory.
  */
-bool LoadPlugins(void* binfo,
-                 void* bfuncs,
+bool LoadPlugins(void* bfuncs,
                  alist* plugin_list,
                  const char* plugin_dir,
                  alist* plugin_names,
@@ -252,7 +250,7 @@ bool LoadPlugins(void* binfo,
       /*
        * Try to load the plugin and resolve the wanted symbols.
        */
-      if (load_a_plugin(binfo, bfuncs, fname.c_str(), plugin_name.c_str(), type,
+      if (load_a_plugin(bfuncs, fname.c_str(), plugin_name.c_str(), type,
                         plugin_list, IsPluginCompatible)) {
         found = true;
       }
@@ -322,7 +320,7 @@ bool LoadPlugins(void* binfo,
       /*
        * Try to load the plugin and resolve the wanted symbols.
        */
-      if (load_a_plugin(binfo, bfuncs, fname.c_str(), result->d_name, type,
+      if (load_a_plugin(bfuncs, fname.c_str(), result->d_name, type,
                         plugin_list, IsPluginCompatible)) {
         found = true;
       }

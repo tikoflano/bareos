@@ -106,7 +106,6 @@ static bRC PyHandleBackupFile(bpContext* ctx, struct save_pkt* sp);
  * Pointers to Bareos functions
  */
 static bFuncs* bfuncs = NULL;
-static bInfo* binfo = NULL;
 
 static genpInfo pluginInfo = {sizeof(pluginInfo), FD_PLUGIN_INTERFACE_VERSION,
                               FD_PLUGIN_MAGIC,    PLUGIN_LICENSE,
@@ -161,13 +160,9 @@ extern "C" {
 /**
  * Plugin called here when it is first loaded
  */
-bRC loadPlugin(bInfo* lbinfo,
-               bFuncs* lbfuncs,
-               genpInfo** pinfo,
-               pFuncs** pfuncs)
+bRC loadPlugin(bFuncs* lbfuncs, genpInfo** pinfo, pFuncs** pfuncs)
 {
   bfuncs = lbfuncs; /* Set Bareos funct pointers */
-  binfo = lbinfo;
 
   *pinfo = &pluginInfo;   /* Return pointer to our info */
   *pfuncs = &pluginFuncs; /* Return pointer to our functions */

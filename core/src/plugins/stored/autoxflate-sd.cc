@@ -87,7 +87,6 @@ static bool sd_enabled_compatible = false;
  * Pointers to Bareos functions
  */
 static bsdFuncs* bfuncs = NULL;
-static bsdInfo* binfo = NULL;
 
 static genpInfo pluginInfo = {sizeof(pluginInfo), SD_PLUGIN_INTERFACE_VERSION,
                               SD_PLUGIN_MAGIC,    PLUGIN_LICENSE,
@@ -131,13 +130,9 @@ extern "C" {
  *
  * External entry point called by Bareos to "load the plugin
  */
-bRC loadPlugin(bsdInfo* lbinfo,
-               bsdFuncs* lbfuncs,
-               genpInfo** pinfo,
-               psdFuncs** pfuncs)
+bRC loadPlugin(bsdFuncs* lbfuncs, genpInfo** pinfo, psdFuncs** pfuncs)
 {
-  bfuncs = lbfuncs; /* set Bareos funct pointers */
-  binfo = lbinfo;
+  bfuncs = lbfuncs;       /* set Bareos funct pointers */
   *pinfo = &pluginInfo;   /* return pointer to our info */
   *pfuncs = &pluginFuncs; /* return pointer to our functions */
 

@@ -58,10 +58,7 @@ typedef enum
 #define HIGHEST_PLUGIN_INSTANCE 127
 
 extern "C" {
-typedef bRC (*t_loadPlugin)(void* binfo,
-                            void* bfuncs,
-                            void** pinfo,
-                            void** pfuncs);
+typedef bRC (*t_loadPlugin)(void* bfuncs, void** pinfo, void** pfuncs);
 typedef bRC (*t_unloadPlugin)(void);
 }
 
@@ -100,8 +97,7 @@ typedef struct gen_pluginInfo {
 class alist;
 
 /* Functions */
-bool LoadPlugins(void* binfo,
-                 void* bfuncs,
+bool LoadPlugins(void* bfuncs,
                  alist* plugin_list,
                  const char* plugin_dir,
                  alist* plugin_names,

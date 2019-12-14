@@ -47,10 +47,7 @@
 #endif
 
 extern "C" {
-typedef int (*loadPlugin)(void* binfo,
-                          void* bfuncs,
-                          void** pinfo,
-                          void** pfuncs);
+typedef int (*loadPlugin)(void* bfuncs, void** pinfo, void** pfuncs);
 typedef int (*unloadPlugin)(void);
 }
 #define DEFAULT_API_VERSION 1
@@ -106,13 +103,11 @@ struct _bareosfuncs {
 
 /*
  * bDirInfo
- * bInfo
  * bsdInfo
  */
 typedef union _bareosinfos bareosinfos;
 union _bareosinfos {
   directordaemon::bDirInfo bdirinfo;
-  filedaemon::bInfo bfdinfo;
   storagedaemon::bsdInfo bsdinfo;
 };
 
@@ -140,7 +135,7 @@ struct _progdata {
 
 #define FREE(ptr)    \
   if (ptr != NULL) { \
-    free(ptr);      \
+    free(ptr);       \
     ptr = NULL;      \
   }
 
@@ -475,13 +470,8 @@ int main(int argc, char* argv[])
       setBareosValue, JobMessage, DebugMessage,         bareosMalloc,
       bareosFree,
   };
-  bareosinfos binfos;
-
   pdata = allocpdata();
   ParseArgs(pdata, argc, argv);
-
-  binfos.bfdinfo.size = sizeof(binfos);
-  binfos.bfdinfo.version = DEFAULT_API_VERSION;
 
   pdata->pluginhandle = dlopen(pdata->pluginfile, RTLD_LAZY);
   if (pdata->pluginhandle == NULL) {
@@ -506,9 +496,7 @@ int main(int argc, char* argv[])
     exit(3);
   }
 
-  if (pdata->bapiversion > 0) { binfos.bdirinfo.version = pdata->bapiversion; }
-
-  loadplugfunc(&binfos, &bfuncs, (void**)&pdata->pinfo, (void**)&pdata->pfuncs);
+  loadplugfunc(&bfuncs, (void**)&pdata->pinfo, (void**)&pdata->pfuncs);
 
   pdata->bplugtype = Getplugintype(pdata);
 

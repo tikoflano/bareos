@@ -92,7 +92,6 @@ static bRC setup_restore(bpContext* ctx, void* value);
  * Pointers to Bareos functions
  */
 static bFuncs* bfuncs = NULL;
-static bInfo* binfo = NULL;
 
 /**
  * Plugin Information block
@@ -313,13 +312,9 @@ extern "C" {
  *
  * External entry point called by Bareos to "load" the plugin
  */
-bRC loadPlugin(bInfo* lbinfo,
-               bFuncs* lbfuncs,
-               genpInfo** pinfo,
-               pFuncs** pfuncs)
+bRC loadPlugin(bFuncs* lbfuncs, genpInfo** pinfo, pFuncs** pfuncs)
 {
-  bfuncs = lbfuncs; /* set Bareos funct pointers */
-  binfo = lbinfo;
+  bfuncs = lbfuncs;       /* set Bareos funct pointers */
   *pinfo = &pluginInfo;   /* return pointer to our info */
   *pfuncs = &pluginFuncs; /* return pointer to our functions */
 
@@ -1436,8 +1431,8 @@ static inline bool parse_gfapi_devicename(char* devicename,
        * path specified for the unix socket.
        * It can happen if there is no subdirectory in the URI
        */
-      char *before_parameter = strchr(bp, '?');
-      char *before_dir = strchr(bp, '/');
+      char* before_parameter = strchr(bp, '?');
+      char* before_dir = strchr(bp, '/');
 
       if (before_dir && (!before_parameter || before_parameter > before_dir)) {
         bp = before_dir;

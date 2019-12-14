@@ -81,9 +81,6 @@ static void bareosCopyRecordState(DeviceRecord* dst, DeviceRecord* src);
 static void bareosFreeRecord(DeviceRecord* rec);
 static bool IsPluginCompatible(Plugin* plugin);
 
-/* Bareos info */
-static bsdInfo binfo = {sizeof(bsdFuncs), SD_PLUGIN_INTERFACE_VERSION};
-
 /* Bareos entry points */
 static bsdFuncs bfuncs = {sizeof(bsdFuncs),       SD_PLUGIN_INTERFACE_VERSION,
                           bareosRegisterEvents,   bareosUnRegisterEvents,
@@ -406,8 +403,8 @@ void LoadSdPlugins(const char* plugin_dir, alist* plugin_names)
     return;
   }
   sd_plugin_list = new alist(10, not_owned_by_alist);
-  if (!LoadPlugins((void*)&binfo, (void*)&bfuncs, sd_plugin_list, plugin_dir,
-                   plugin_names, plugin_type, IsPluginCompatible)) {
+  if (!LoadPlugins((void*)&bfuncs, sd_plugin_list, plugin_dir, plugin_names,
+                   plugin_type, IsPluginCompatible)) {
     /*
      * Either none found, or some error
      */
