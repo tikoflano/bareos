@@ -179,8 +179,7 @@ extern "C" {
  */
 bRC loadPlugin(bFuncs* lbfuncs, genpInfo** pinfo, pFuncs** pfuncs)
 {
-  bfuncs = lbfuncs; /* set Bareos funct pointers */
-  binfo = lbinfo;
+  bfuncs = lbfuncs;       /* set Bareos funct pointers */
   *pinfo = &pluginInfo;   /* return pointer to our info */
   *pfuncs = &pluginFuncs; /* return pointer to our functions */
 
