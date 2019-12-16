@@ -1192,7 +1192,7 @@ class BareosOvirtWrapper(object):
                 restore_existing_vm = True
 
             else:
-                self.create_vm(context, self.options, vm_name, cluster_name)
+                self.create_vm(context, vm_name, cluster_name)
                 self.add_nics_to_vm(context)
 
             # Extract disk information from OVF
