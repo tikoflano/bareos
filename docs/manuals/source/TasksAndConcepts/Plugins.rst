@@ -603,6 +603,14 @@ It was tested with oVirt/RHV 4.3. There are currently no known technical differe
 RHV and oVirt (which is RHVs upstream project) that are relevant for this plugin, so both
 names are equivalent in this documentation if not explicitly mentioned.
 
+For backing up a VM, the plugin performs the following steps:
+
+* Retrieve the VM configuration data from the oVirt API as OVF XML data
+* Take a snapshot of the VM
+* Retrieve the VM disk image data of the snapshot via oVirt Image I/O
+* Remove the snapshot
+
+
 It is included in Bareos since :sinceVersion:`19: oVirt Plugin`.
 
 .. _oVirtPlugin-status:
@@ -629,6 +637,11 @@ The oVirt project provides the package at https://resources.ovirt.org/pub/ovirt-
 
 The system runing the Bareos FD with this plugin must have network access to the oVirt/RHV
 engine server on the TCP ports 443 (https for API access) and 54323 (for Image I/O Proxy access).
+
+The QEMU Guest Agent (QEMU GA) should be installed inside VMs to optimize the consistency
+of snapshots by filesystem flushing and quiescing. This also allows custom freeze/thaw hook
+scripts in Linux VMs to ensure application level consistency of snapshots. On Windows the
+QEMU GA provides VSS support and live snapshots attempt to quiesce whenever possible.
 
 .. _oVirtPlugin-installation:
 
@@ -960,7 +973,7 @@ Anything else from the restore dialogue is the same.
 
 This will create disk image files that could be examined for example by using
 the **guestfish** tool (see http://libguestfs.org/guestfish.1.html). This tool
-can also extract single files from the disk image.
+can also be used to extract single files from the disk image.
 
 
 .. _sdPlugins:
