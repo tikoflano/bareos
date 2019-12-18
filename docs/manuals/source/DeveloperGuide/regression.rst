@@ -1,12 +1,13 @@
 Bareos Regression Testing
 =========================
 
-.. note::
+.. warning::
 
-   While Bareos Regression Testing is still in use,
-   new tests should be written as :ref:`DeveloperGuide/BuildAndTestBareos:Systemtests`.
+   Regression Tests are deprecated. Please do not create new regression tests.
+   Write new system tests as :ref:`DeveloperGuide/BuildAndTestBareos:Systemtests`
+   The existing regression tests will be ported to system tests also.
 
-Setting up Regession Testing
+Setting up Regression Testing
 ----------------------------
 
 This document is intended mostly for developers who wish to ensure that

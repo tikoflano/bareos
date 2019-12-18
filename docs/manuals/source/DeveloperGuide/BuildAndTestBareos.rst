@@ -89,6 +89,20 @@ sloppiness = file_macro
   hash_dir = false
   sloppiness = file_macro
 
+
+
+Bareos Tests
+~~~~~~~~~~~~
+
+In Bareos exist three types of tests:
+
+* unit tests
+* system tests
+* regression tests
+
+
+
+
 Systemtests
 ~~~~~~~~~~~
 
