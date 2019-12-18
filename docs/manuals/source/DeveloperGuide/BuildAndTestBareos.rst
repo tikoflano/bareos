@@ -100,7 +100,67 @@ In Bareos exist three types of tests:
 * system tests
 * regression tests
 
+Prefer the tests in this order.
 
+The regression tests are deprecated. They will be reviewed and those tests that
+are still relevant will be migrated to system tests.
+
+Bareos tests are based on ctest testing in combination with Google test for the
+unit tests.
+
+Ignoring the deprecated regression tests, there are two types of test left:
+systemtests and unittests.
+
+
+Always prefer writing a unit test over writing a system test.
+
+Unit tests should run fast (very fast) and test the functionality of a single
+function.
+
+Only write a system tests if writing a unit test is not possible as you need
+to test a specific behaviour that cannot be tested in a unit test.
+
+The following rules apply to all types of tests:
+* Test one and only one thing in each test.
+* Give the test a name that directly makes clear what is being tested.
+
+Systemtests can be divided into "normal" systemtests and webui system tests.
+
+
+Unit tests are being executed during the build of all packages.
+They also are executed during the cross build of windows packages
+via wine.
+
+
+
+All tests are run via the ctest test mechanism.
+The unit tests are prefixed with "gtest:", the systemtests are prefixed with
+"system:" and the webui tests are prefixed with "webui:"
+
+
+All tests can be listed via "ctest -N", specific tests can be run with
+"ctest -R <regular expression>"
+The test setup is done in a way that parallel testing is possible.
+"ctest -j <number of parallel tests>" will run the given number of tests
+in parallel. This will speedup the real testing time very much.
+
+"ctest -V" will show what is going on during the test.
+If a test fails, it is easier to examine what is is called during the tests
+and to run the test manually or in a debugger.
+
+Unit Tests
+~~~~~~~~~~
+Bareos unit tests are usually written in C++ using Google Test.
+The unit tests reside in ``core/src/tests`` and are compiled with the rest of
+Bareos if Google Test is available on your system.  Unit tests can be run using
+``make test`` or ``ctest``.
+
+Adding a new unit Test
+----------------------
+To add a new test, you create your sourcefiles in ``core/src/tests`` and
+register the test in ``CMakeLists.txt`` in that directory.  There is also a
+helper script ``add_new_unit_test.sh`` that will setup a test from a template
+and register it in ``CMakeLists.txt``.
 
 
 Systemtests
@@ -109,7 +169,8 @@ Systemtests
 Systemtests use the locally compiled version of the Bareos daemons
 and run tests on them.
 
-The Bareos Systemtest approach is intended to substitute the older :ref:`DeveloperGuide/regression:Bareos Regression Testing` approach.
+The Bareos Systemtest approach is intended to substitute the older
+:ref:`DeveloperGuide/regression:Bareos Regression Testing` approach.
 
 
 Run all system tests
@@ -133,7 +194,7 @@ Run all system tests
 
    user@host:~$ cd bareos-local-tests/build
    user@host:~/bareos-local-tests/build$ make test
-   
+
    Running tests...
    Test project ~/bareos-local-tests/build
          Start  1: system:backup-bareos-test
@@ -195,8 +256,8 @@ or change into a test directory and run :command:`testrunner` directly:
    user@host:~/bareos-local-tests/build/tests/backup-bareos-test$ ./testrunner
    creating database (sqlite3)
    running ~/bareos-local-tests/build/systemtests/scripts/setup
-   
-   
+
+
    === backup-bareos-test: starting at 15:03:20 ===
    =
    =
@@ -252,3 +313,9 @@ and a :command:`bconsole` session can be used to retrieve information:
    | 2     | RestoreFiles     | bareos-fd | 2019-08-15 15:04:41 | R    | F     | 21       | 138399   | T         |
    +-------+------------------+-----------+---------------------+------+-------+----------+----------+-----------+
    *
+
+
+Webui tests
+~~~~~~~~~~~
+
+
