@@ -5,24 +5,6 @@ This document is intended mostly for developers and describes how you
 can contribute to the Bareos project and the general framework of making
 Bareos source changes.
 
-History
--------
-
-Bareos is a fork of the open source project Bacula version 5.2. In 2010
-the Bacula community developer Marco van Wieringen started to collect
-rejected or neglected community contributions in his own branch. This
-branch was later on the base of Bareos and since then was enriched by a
-lot of new features.
-
-This documentation also bases on the original Bacula documentation, it
-is technically also a fork of the documenation created following the
-rules of the GNU Free Documentation License.
-
-Original author of Bacula and it’s documentation is Kern Sibbald. We
-thank Kern and all contributors to Bacula and its documentation. We
-maintain a list of contributors to Bacula (until the time we’ve started
-the fork) and Bareos in our AUTHORS file.
-
 Contributions
 -------------
 
@@ -39,7 +21,7 @@ A detailed description can be found in the chapter :ref:`git-workflow`.
 If you don't want to sign up to GitHub, you can also send us your patches via E-Mail in **git format-patch** format to the `bareos-devel`_ mailing list.
 
 Please make sure to use the Bareos `Automatic Sourcecode Formatting`_
-Don’t forget any Copyrights and acknowledgments if it isn’t 100% your code.
+Don’t forget any Copyrights and acknowledgments if it isn't 100% your code.
 Also, include the Bareos copyright notice that can be found in every source file.
 
 Bug Database
@@ -119,7 +101,12 @@ The configuration file will be automatically found and used by clang-format:
 Formatting exceptions
 ---------------------
 
-For some parts of code it works best to hand-optimize the formatting. We sometimes do this for larger tables and deeply nested brace initialization. If you need to hand-optimize make sure you add **clang-format off** and **clang-format on** comments so applying **clang-format** on your source will not undo your manual optimization. Please apply common sense and use this exception sparingly.
+For some parts of code it works best to hand-optimize the formatting.
+We sometimes do this for larger tables and deeply nested brace initialization.
+If you need to hand-optimize make sure you add **clang-format off** and
+**clang-format on** comments so applying **clang-format** on your source will
+not undo your manual optimization.
+Please apply common sense and use this exception sparingly.
 
 Sourcecode Comments
 -------------------
