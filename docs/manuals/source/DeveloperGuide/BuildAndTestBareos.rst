@@ -56,7 +56,7 @@ Bareos cmake configuration allows a lot of different defines to be set.
 For the test-environment, we use the minimal defines required to run the tests.
 
 When interested in the cmake defines for the Bareos production packages,
-please refer to the corresponding build desciptions:
+please refer to the corresponding build descriptions:
 
   * Debian Packages: `debian/rules <https://github.com/bareos/bareos/blob/master/core/debian/rules>`__
   * RPM Packages: `core/platforms/packaging/bareos.spec <https://github.com/bareos/bareos/blob/master/core/platforms/packaging/bareos.spec>`__
@@ -71,7 +71,7 @@ To get the most out of ccache, you should configure it to work correctly with Ba
 
 base_dir
    Set this to a common directory where your checked out sources and cmake binary-dir live.
-   Your homedirectoy is probably a good starting point.
+   Your home directoy is probably a good starting point.
    This setting lets ccache ignore the path to files below this ``base_dir``.
    This makes sure you will get a cache hit even if the path to the source files changes.
 hash_dir
@@ -109,7 +109,7 @@ Bareos tests are based on ctest testing in combination with Google test for the
 unit tests.
 
 Ignoring the deprecated regression tests, there are two types of test left:
-systemtests and unittests.
+system tests and unit tests.
 
 
 Always prefer writing a unit test over writing a system test.
@@ -124,27 +124,25 @@ The following rules apply to all types of tests:
 * Test one and only one thing in each test.
 * Give the test a name that directly makes clear what is being tested.
 
-Systemtests can be divided into "normal" systemtests and webui system tests.
+system tests can be divided into "normal" system tests and webui system tests.
 
 
 Unit tests are being executed during the build of all packages.
 They also are executed during the cross build of windows packages
 via wine.
 
-
-
 All tests are run via the ctest test mechanism.
-The unit tests are prefixed with "gtest:", the systemtests are prefixed with
+The unit tests are prefixed with "gtest:", the system tests are prefixed with
 "system:" and the webui tests are prefixed with "webui:"
 
 
-All tests can be listed via "ctest -N", specific tests can be run with
-"ctest -R <regular expression>"
+All tests can be listed via ``ctest -N``, specific tests can be run with
+``ctest -R <regular expression>``
 The test setup is done in a way that parallel testing is possible.
-"ctest -j <number of parallel tests>" will run the given number of tests
+``ctest -j <number of parallel tests>`` will run the given number of tests
 in parallel. This will speedup the real testing time very much.
 
-"ctest -V" will show what is going on during the test.
+``ctest -V`` will show what is going on during the test.
 If a test fails, it is easier to examine what is is called during the tests
 and to run the test manually or in a debugger.
 
@@ -163,13 +161,18 @@ helper script ``add_new_unit_test.sh`` that will setup a test from a template
 and register it in ``CMakeLists.txt``.
 
 
-Systemtests
+System tests
 ~~~~~~~~~~~
 
-Systemtests use the locally compiled version of the Bareos daemons
-and run tests on them.
+When creating system tests, please make sure that files being used in the
+system tests that are part of the Bareos repository will be linked instead
+of copied over. This makes sure that changes that are made when working on a
+system test are marked as changes in the original file.
 
-The Bareos Systemtest approach is intended to substitute the older
+System tests use the locally compiled version of the Bareos daemons
+and run tests directly without installation.
+
+The Bareos system test approach is intended to substitute the older
 :ref:`DeveloperGuide/regression:Bareos Regression Testing` approach.
 
 
@@ -225,10 +228,10 @@ Run a single system test
    test 1
        Start 1: system:backup-bareos-test
 
-   1: Test command: ~/bareos-local-tests/build/systemtests/tests/backup-bareos-test/testrunner
+   1: Test command: ~/bareos-local-tests/build/system tests/tests/backup-bareos-test/testrunner
    1: Test timeout computed to be: 1500
    1: creating database (sqlite3)
-   1: running ~/bareos-local-tests/build/systemtests/scripts/setup
+   1: running ~/bareos-local-tests/build/system tests/scripts/setup
    1:
    1:
    1: === backup-bareos-test: starting at 16:09:46 ===
@@ -255,7 +258,7 @@ or change into a test directory and run :command:`testrunner` directly:
    user@host:~/bareos-local-tests/build$ cd tests/backup-bareos-test
    user@host:~/bareos-local-tests/build/tests/backup-bareos-test$ ./testrunner
    creating database (sqlite3)
-   running ~/bareos-local-tests/build/systemtests/scripts/setup
+   running ~/bareos-local-tests/build/system tests/scripts/setup
 
 
    === backup-bareos-test: starting at 15:03:20 ===
