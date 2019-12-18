@@ -90,10 +90,6 @@ All C/C++ code should be formatted properly based on the principles mentioned ab
 The configuration file will be automatically found and used by clang-format:
 
 .. code-block:: bash
-  :caption: Example shell script
-
-  #!/bin/sh
-
   #format one sourcecode file in-place
   clang-format -i ./core/src/dird/dird_conf.cc
 
