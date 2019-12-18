@@ -1,4 +1,4 @@
-Build And Test Bareos
+Build and test Bareos
 ---------------------
 
 
@@ -194,7 +194,7 @@ or change into a test directory and run :command:`testrunner` directly:
 For verbose output, set ``export REGRESS_DEBUG=1`` before running :command:`testrunner`.
 
 
-The test environment persists after runnning a test.
+The test environment persists after running a test.
 So to further debug a problem,
 the Bareos daemons can be started again,
 and a :command:`bconsole` session can be used to retrieve information:
