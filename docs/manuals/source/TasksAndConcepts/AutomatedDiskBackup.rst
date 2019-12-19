@@ -5,39 +5,71 @@ Automated Disk Backup
 
 :index:`\ <single: Volumes; Using Pools to Manage>`\  :index:`\ <single: Disk; Automated Backup>`\  :index:`\ <single: Automated Disk Backup>`\  :index:`\ <single: Pool>`\ 
 
-If you manage five or ten machines and have a nice tape backup, you don’t need Pools, and you may wonder what they are good for. In this chapter, you will see that Pools can help you optimize disk storage space. The same techniques can be applied to a shop that has multiple tape drives, or that wants to mount various different Volumes to meet their needs.
+If you manage five or ten machines and have a nice tape backup, you don’t need
+Pools, and you may wonder what they are good for. In this chapter, you will see
+that Pools can help you optimize disk storage space. The same techniques can be
+applied to a shop that has multiple tape drives, or that wants to mount various
+different Volumes to meet their needs.
 
-The rest of this chapter will give an example involving backup to disk Volumes, but most of the information applies equally well to tape Volumes.
+The rest of this chapter will give an example involving backup to disk Volumes,
+but most of the information applies equally well to tape Volumes.
 
 Given is a scenario, where the size of a full backup is about 15GB.
 
-It is required, that backup data is available for six months. Old files should be available on a daily basis for a week, a weekly basis for a month, then monthly for six months. In addition, offsite capability is not needed. The daily changes amount to about 300MB on the average, or about 2GB per week.
+It is required, that backup data is available for six months. Old files should
+be available on a daily basis for a week, a weekly basis for a month, then
+monthly for six months. In addition, off-site capability is not needed. The
+daily changes amount to about 300MB on the average, or about 2GB per week.
 
-As a consequence, the total volume of data they need to keep to meet their needs is about 100GB (15GB x 6 + 2GB x 5 + 0.3 x 7) = 102.1GB.
+As a consequence, the total volume of data they need to keep to meet their
+needs is about 100GB (15GB x 6 + 2GB x 5 + 0.3 x 7) = 102.1GB.
 
-The chosen solution was to use a 120GB hard disk – far less than 1/10th the price of a tape drive and the cassettes to handle the same amount of data, and to have the backup software write to disk files.
+The chosen solution was to use a 120GB hard disk – far less than 1/10th the
+price of a tape drive and the cassettes to handle the same amount of data, and
+to have the backup software write to disk files.
 
-The rest of this chapter will explain how to setup Bareos so that it would automatically manage a set of disk files with the minimum sysadmin intervention.
+The rest of this chapter will explain how to setup Bareos so that it would
+automatically manage a set of disk files with the minimum sysadmin
+intervention.
 
 .. _OverallDesign:
 
 Overall Design
 --------------
 
-Getting Bareos to write to disk rather than tape in the simplest case is rather easy.
+Getting Bareos to write to disk rather than tape in the simplest case is rather
+easy.
 
-One needs to consider about what happens if we have only a single large Bareos Volume defined on our hard disk. Everything works fine until the Volume fills, then Bareos will ask you to mount a new Volume. This same problem applies to the use of tape Volumes if your tape fills. Being a hard disk and the only one you have, this will be a bit of a problem. It should be obvious that it is better to use a number of smaller Volumes and arrange for Bareos to automatically recycle them so that the disk
-storage space can be reused.
+One needs to consider about what happens if we have only a single large Bareos
+Volume defined on our hard disk. Everything works fine until the Volume fills,
+then Bareos will ask you to mount a new Volume. This same problem applies to
+the use of tape Volumes if your tape fills. Being a hard disk and the only one
+you have, this will be a bit of a problem. It should be obvious that it is
+better to use a number of smaller Volumes and arrange for Bareos to
+automatically recycle them so that the disk storage space can be reused.
 
-As mentioned, the solution is to have multiple Volumes, or files on the disk. To do so, we need to limit the use and thus the size of a single Volume, by time, by number of jobs, or by size. Any of these would work, but we chose to limit the use of a single Volume by putting a single job in each Volume with the exception of Volumes containing Incremental backup where there will be 6 jobs (a week’s worth of data) per volume. The details of this will be discussed shortly. This is a single client
-backup, so if you have multiple clients you will need to multiply those numbers by the number of clients, or use a different system for switching volumes, such as limiting the volume size.
+As mentioned, the solution is to have multiple Volumes, or files on the disk.
+To do so, we need to limit the use and thus the size of a single Volume, by
+time, by number of jobs, or by size. Any of these would work, but we chose to
+limit the use of a single Volume by putting a single job in each Volume with
+the exception of Volumes containing Incremental backup where there will be 6
+jobs (a week’s worth of data) per volume. The details of this will be discussed
+shortly. This is a single client backup, so if you have multiple clients you
+will need to multiply those numbers by the number of clients, or use a
+different system for switching volumes, such as limiting the volume size.
 
-.. TODO: This chapter will get rewritten. Instead of limiting a Volume to one job, we will utilize ``Max Use Duration = 24 hours``\ . This prevents problems when adding more clients, because otherwise each job has to run seperat.
 
-The next problem to resolve is recycling of Volumes. As you noted from above, the requirements are to be able to restore monthly for 6 months, weekly for a month, and daily for a week. So to simplify things, why not do a Full save once a month, a Differential save once a week, and Incremental saves daily. Now since each of these different kinds of saves needs to remain valid for differing periods, the simplest way to do this (and possibly the only) is to have a separate Pool for each backup
-type.
+The next problem to resolve is recycling of Volumes. As you noted from above,
+the requirements are to be able to restore monthly for 6 months, weekly for a
+month, and daily for a week. So to simplify things, why not do a Full save once
+a month, a Differential save once a week, and Incremental saves daily. Now
+since each of these different kinds of saves needs to remain valid for
+differing periods, the simplest way to do this (and possibly the only) is to
+have a separate Pool for each backup type.
 
-The decision was to use three Pools: one for Full saves, one for Differential saves, and one for Incremental saves, and each would have a different number of volumes and a different Retention period to accomplish the requirements.
+The decision was to use three Pools: one for Full saves, one for Differential
+saves, and one for Incremental saves, and each would have a different number of
+volumes and a different Retention period to accomplish the requirements.
 
 
 
@@ -50,7 +82,8 @@ Full Pool
 
 :index:`\ <single: Pool; Full>`\  :index:`\ <single: Full Pool>`\ 
 
-Putting a single Full backup on each Volume, will require six Full save Volumes, and a retention period of six months. The Pool needed to do that is:
+Putting a single Full backup on each Volume, will require six Full save
+Volumes, and a retention period of six months. The Pool needed to do that is:
 
 .. code-block:: bareosconfig
    :caption: Full-Pool
@@ -61,16 +94,26 @@ Putting a single Full backup on each Volume, will require six Full save Volumes,
      Recycle = yes
      AutoPrune = yes
      Volume Retention = 6 months
-     Maximum Volume Jobs = 1
+     Volume Use Duration = 23h
      Label Format = Full-
      Maximum Volumes = 9
    }
 
-Since these are disk Volumes, no space is lost by having separate Volumes for each backup (done once a month in this case). The items to note are the retention period of six months (i.e. they are recycled after six months), that there is one job per volume (Maximum Volume Jobs = 1), the volumes will be labeled Full-0001, ... Full-0006 automatically. One could have labeled these manually from the start, but why not use the features of Bareos.
+Since these are disk Volumes, no space is lost by having separate Volumes for
+each backup (done once a month in this case). The items to note are the
+retention period of six months (i.e. they are recycled after six months), that
+there is one job per volume (Volume Use Duration = 23h), the volumes will be
+labeled Full-0001, ... Full-0006 automatically. One could have labeled these
+manually from the start, but why not use the features of Bareos.
 
-Six months after the first volume is used, it will be subject to pruning and thus recycling, so with a maximum of 9 volumes, there should always be 3 volumes available (note, they may all be marked used, but they will be marked purged and recycled as needed).
+Six months after the first volume is used, it will be subject to pruning and
+thus recycling, so with a maximum of 9 volumes, there should always be 3
+volumes available (note, they may all be marked used, but they will be marked
+purged and recycled as needed).
 
-If you have two clients, you would want to set Maximum Volume Jobs to 2 instead of one, or set a limit on the size of the Volumes, and possibly increase the maximum number of Volumes.
+If you have two clients, you would want to set Maximum Volume Jobs to 2 instead
+of one, or set a limit on the size of the Volumes, and possibly increase the
+maximum number of Volumes.
 
 
 
@@ -83,7 +126,9 @@ Differential Pool
 
 :index:`\ <single: Pool; Differential>`\  :index:`\ <single: Differential Pool>`\ 
 
-For the Differential backup Pool, we choose a retention period of a bit longer than a month and ensure that there is at least one Volume for each of the maximum of five weeks in a month. So the following works:
+For the Differential backup Pool, we choose a retention period of a bit longer
+than a month and ensure that there is at least one Volume for each of the
+maximum of five weeks in a month. So the following works:
 
 .. code-block:: bareosconfig
    :caption: Differential Pool
@@ -94,16 +139,22 @@ For the Differential backup Pool, we choose a retention period of a bit longer t
      Recycle = yes
      AutoPrune = yes
      Volume Retention = 40 days
-     Maximum Volume Jobs = 1
+     Volume Use Duration = 23h
      Label Format = Diff-
      Maximum Volumes = 10
    }
 
-As you can see, the Differential Pool can grow to a maximum of 9 volumes, and the Volumes are retained 40 days and thereafter they can be recycled. Finally there is one job per volume. This, of course, could be tightened up a lot, but the expense here is a few GB which is not too serious.
+As you can see, the Differential Pool can grow to a maximum of 9 volumes, and
+the Volumes are retained 40 days and thereafter they can be recycled. Finally
+there is one job per volume. This, of course, could be tightened up a lot, but
+the expense here is a few GB which is not too serious.
 
-If a new volume is used every week, after 40 days, one will have used 7 volumes, and there should then always be 3 volumes that can be purged and recycled.
+If a new volume is used every week, after 40 days, one will have used 7
+volumes, and there should then always be 3 volumes that can be purged and
+recycled.
 
-See the discussion above concering the Full pool for how to handle multiple clients.
+See the discussion above concerning the Full pool for how to handle multiple
+clients.
 
 
 
@@ -132,14 +183,20 @@ Finally, here is the resource for the Incremental Pool:
      Maximum Volumes = 7
    }
 
-We keep the data for 20 days rather than just a week as the needs require. To reduce the proliferation of volume names, we keep a week’s worth of data (6 incremental backups) in each Volume. In practice, the retention period should be set to just a bit more than a week and keep only two or three volumes instead of five. Again, the lost is very little and as the system reaches the full steady state, we can adjust these values so that the total disk usage doesn’t exceed the disk capacity.
+We keep the data for 20 days rather than just a week as the needs require. To
+reduce the proliferation of volume names, we keep a week’s worth of data (6
+incremental backups) in each Volume. In practice, the retention period should
+be set to just a bit more than a week and keep only two or three volumes
+instead of five. Again, the lost is very little and as the system reaches the
+full steady state, we can adjust these values so that the total disk usage
+doesn't exceed the disk capacity.
 
-If you have two clients, the simplest thing to do is to increase the maximum volume jobs from 6 to 12. As mentioned above, it is also possible limit the size of the volumes. However, in that case, you will need to have a better idea of the volume or add sufficient volumes to the pool so that you will be assured that in the next cycle (after 20 days) there is at least one volume that is pruned and can be recycled.
 
 Configuration Files
 -------------------
 
-The following example shows you the actual files used, with only a few minor modifications to simplify things.
+The following example shows you the actual files used, with only a few minor
+modifications to simplify things.
 
 The Director’s configuration file is as follows:
 
@@ -288,7 +345,7 @@ The Director’s configuration file is as follows:
      Recycle = yes           # automatically recycle Volumes
      AutoPrune = yes         # Prune expired volumes
      Volume Retention = 6 months
-     Maximum Volume Jobs = 1
+     Volume Use Duration = 23h
      Label Format = Full-
      Maximum Volumes = 9
    }
@@ -310,7 +367,7 @@ The Director’s configuration file is as follows:
      Recycle = yes
      AutoPrune = yes
      Volume Retention = 40 days
-     Maximum Volume Jobs = 1
+     Volume Use Duration = 23h
      Label Format = Diff-
      Maximum Volumes = 10
    }

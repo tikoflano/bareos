@@ -294,7 +294,7 @@ For example, his bareos-dir.conf file looks like the following:
      Recycle = yes
      AutoPrune = yes
      Volume Retention = 6d
-     Maximum Volume Jobs = 2
+     Volume Use Duration = 23h
    }
    Pool {
      Name = TuesdayPool
@@ -302,7 +302,7 @@ For example, his bareos-dir.conf file looks like the following:
      Recycle = yes
      AutoPrune = yes
      Volume Retention = 6d
-     Maximum Volume Jobs = 2
+     Volume Use Duration = 23h
    }
    Pool {
      Name = WednesdayPool
@@ -310,7 +310,7 @@ For example, his bareos-dir.conf file looks like the following:
      Recycle = yes
      AutoPrune = yes
      Volume Retention = 6d
-     Maximum Volume Jobs = 2
+     Volume Use Duration = 23h
    }
    Pool {
      Name = ThursdayPool
@@ -318,7 +318,7 @@ For example, his bareos-dir.conf file looks like the following:
      Recycle = yes
      AutoPrune = yes
      Volume Retention = 6d
-     Maximum Volume Jobs = 2
+     Volume Use Duration = 23h
    }
    Pool {
      Name = WeeklyPool
@@ -326,7 +326,7 @@ For example, his bareos-dir.conf file looks like the following:
      Recycle = yes
      AutoPrune = yes
      Volume Retention = 12d
-     Maximum Volume Jobs = 2
+     Volume Use Duration = 23h
    }
    # EOF
 
