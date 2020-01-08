@@ -86,31 +86,24 @@ endmacro()
 macro(handle_python_plugin_modules)
   if(EXISTS ${python_plugin_module_src_test_dir})
     set(PYMODULES_TO_LINK_TO_SRC
-
-      filed/BareosFdWrapper.py
-      filed/BareosFdPluginBaseclass.py
-      filed/bareos_fd_consts.py
-      filed/bareos-fd-mock-test.py
-
-      filed/bareos-fd-local-fileset.py
-      filed/BareosFdPluginLocalFileset.py
-
-      filed/BareosFdPluginLDAP.py
-      filed/bareos-fd-ldap.py
-
-      filed/BareosFdPluginOvirt.py
-      filed/bareos-fd-ovirt.py
-
-
-      dird/bareos_dir_consts.py
-      dird/BareosDirPluginBaseclass.py
-      dird/bareos-dir-class-plugin.py
-      dird/BareosDirWrapper.py
-
-      stored/bareos_sd_consts.py
-      stored/bareos-sd-class-plugin.py
-      stored/BareosSdPluginBaseclass.py
-      stored/BareosSdWrapper.py
+        filed/BareosFdWrapper.py
+        filed/BareosFdPluginBaseclass.py
+        filed/bareos_fd_consts.py
+        filed/bareos-fd-mock-test.py
+        filed/bareos-fd-local-fileset.py
+        filed/BareosFdPluginLocalFileset.py
+        filed/BareosFdPluginLDAP.py
+        filed/bareos-fd-ldap.py
+        filed/BareosFdPluginOvirt.py
+        filed/bareos-fd-ovirt.py
+        dird/bareos_dir_consts.py
+        dird/BareosDirPluginBaseclass.py
+        dird/bareos-dir-class-plugin.py
+        dird/BareosDirWrapper.py
+        stored/bareos_sd_consts.py
+        stored/bareos-sd-class-plugin.py
+        stored/BareosSdPluginBaseclass.py
+        stored/BareosSdWrapper.py
     )
 
     foreach(PYMODULE_SOURCEPATH ${PYMODULES_TO_LINK_TO_SRC})
@@ -155,7 +148,9 @@ macro(prepare_test)
   # set(DEFAULT_DB_TYPE )
   set(archivedir ${current_test_directory}/storage)
   set(confdir ${current_test_directory}/etc/bareos)
-  set(config_directory_dir_additional_test_config ${current_test_directory}/etc/bareos/bareos-dir.d/additional_test_config)
+  set(config_directory_dir_additional_test_config
+      ${current_test_directory}/etc/bareos/bareos-dir.d/additional_test_config
+  )
 
   set(logdir ${current_test_directory}/log)
   set(tmpdir ${current_test_directory}/tmp)
@@ -173,12 +168,40 @@ macro(prepare_test)
     file(MAKE_DIRECTORY ${confdir})
     file(MAKE_DIRECTORY ${working_dir})
     file(MAKE_DIRECTORY ${config_directory_dir_additional_test_config})
-    # create a bin/bareos and bin/bconsole script in every testdir for start/stop
-    # and bconsole
+    # create a bin/bareos and bin/bconsole script in every testdir for
+    # start/stop and bconsole
     file(MAKE_DIRECTORY "${current_test_directory}/bin")
-    configure_file("bin/bconsole" "${current_test_directory}/bin/bconsole" COPYONLY)
+    configure_file(
+      "bin/bconsole" "${current_test_directory}/bin/bconsole" COPYONLY
+    )
     configure_file("bin/bareos" "${current_test_directory}/bin/bareos" COPYONLY)
+
+    set(BAREOS_DIRECTOR_BINARY
+        ${current_test_directory}/sbin/bareos-dir-${TEST_NAME}
+    )
+    set(BAREOS_STORAGEDAEMON_BINARY
+        ${current_test_directory}/sbin/bareos-sd-${TEST_NAME}
+    )
+    set(BAREOS_FILEDAEMON_BINARY
+        ${current_test_directory}/sbin/bareos-fd-${TEST_NAME}
+    )
+    file(MAKE_DIRECTORY "${current_test_directory}/sbin")
+    create_symlink(
+      "${CMAKE_CURRENT_BINARY_DIR}/sbin/bareos-dir" "${BAREOS_DIRECTOR_BINARY}"
+    )
+    create_symlink(
+      "${CMAKE_CURRENT_BINARY_DIR}/sbin/bareos-sd"
+      "${BAREOS_STORAGEDAEMON_BINARY}"
+    )
+    create_symlink(
+      "${CMAKE_CURRENT_BINARY_DIR}/sbin/bareos-fd"
+      "${BAREOS_FILEDAEMON_BINARY}"
+    )
   endif()
+endmacro()
+
+macro(create_symlink target link)
+  execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink ${target} ${link})
 endmacro()
 
 # extract  db version from cats.h
@@ -294,10 +317,7 @@ file(MAKE_DIRECTORY ${scripts})
 file(MAKE_DIRECTORY ${working})
 file(MAKE_DIRECTORY ${archivedir})
 
-execute_process(
-  COMMAND ${CMAKE_COMMAND} -E create_symlink ${scriptdir}/btraceback
-          ${sbindir}/btraceback
-)
+create_symlink(${scriptdir}/btraceback ${sbindir}/btraceback)
 
 file(REMOVE_RECURSE ${scripts}/ddl)
 file(RENAME ${PROJECT_BINARY_DIR}/ddl ${scripts}/ddl)
@@ -540,10 +560,9 @@ set(BINARIES_TO_LINK_TO_SBIN
 
 foreach(BINARY_SOURCEPATH ${BINARIES_TO_LINK_TO_SBIN})
   get_filename_component(BINARY_NAME ${BINARY_SOURCEPATH} NAME)
-  execute_process(
-    COMMAND ${CMAKE_COMMAND} -E create_symlink
-            ${PROJECT_BINARY_DIR}/../core/src/${BINARY_SOURCEPATH}
-            ${sbindir}/${BINARY_NAME}
+  create_symlink(
+    ${PROJECT_BINARY_DIR}/../core/src/${BINARY_SOURCEPATH}
+    ${sbindir}/${BINARY_NAME}
   )
 endforeach()
 
@@ -563,19 +582,13 @@ set(BINARIES_TO_LINK_TO_BIN
 
 foreach(BINARY_SOURCEPATH ${BINARIES_TO_LINK_TO_BIN})
   get_filename_component(BINARY_NAME ${BINARY_SOURCEPATH} NAME)
-  execute_process(
-    COMMAND ${CMAKE_COMMAND} -E create_symlink
-            ${PROJECT_BINARY_DIR}/../core/src/${BINARY_SOURCEPATH}
-            ${bindir}/${BINARY_NAME}
+  create_symlink(
+    ${PROJECT_BINARY_DIR}/../core/src/${BINARY_SOURCEPATH}
+    ${bindir}/${BINARY_NAME}
   )
 endforeach()
 
-execute_process(
-  COMMAND ${CMAKE_COMMAND} -E create_symlink
-          ${PROJECT_BINARY_DIR}/../core/src/console/bconsole ${bindir}/bconsole
+create_symlink(
+  ${PROJECT_BINARY_DIR}/../core/src/console/bconsole ${bindir}/bconsole
 )
-
-execute_process(
-  COMMAND ${CMAKE_COMMAND} -E create_symlink ${scriptdir}/bareos
-          ${bindir}/bareos
-)
+create_symlink(${scriptdir}/bareos ${bindir}/bareos)
