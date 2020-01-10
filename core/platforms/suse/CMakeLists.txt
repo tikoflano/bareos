@@ -50,19 +50,19 @@ message(STATUS "installing firewall files to ${DESTSTARTDIR}")
 
 # Install firewall fd
 install(
-  FILES "${CMAKE_CURRENT_BINARY_DIR}/bareos-fd.fw"
+  FILES "bareos-fd.fw"
   DESTINATION "${FIREWALL_DIR}"
   RENAME bareos-fd
 )
 # Install firewall sd
 install(
-  FILES "${CMAKE_CURRENT_BINARY_DIR}/bareos-sd.fw"
+  FILES "bareos-sd.fw"
   DESTINATION "${FIREWALL_DIR}"
   RENAME bareos-sd
 )
 # Install firewall dir
 install(
-  FILES "${CMAKE_CURRENT_BINARY_DIR}/bareos-dir.fw"
+  FILES "bareos-dir.fw"
   DESTINATION "${FIREWALL_DIR}"
   RENAME bareos-dir
 )
