@@ -1,6 +1,6 @@
 #   BAREOS® - Backup Archiving REcovery Open Sourced
 #
-#   Copyright (C) 2017-2019 Bareos GmbH & Co. KG
+#   Copyright (C) 2017-2020 Bareos GmbH & Co. KG
 #
 #   This program is Free Software; you can redistribute it and/or
 #   modify it under the terms of version three of the GNU Affero General Public
@@ -24,6 +24,7 @@
 file(GLOB_RECURSE IN_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.in")
 foreach(in_file ${IN_FILES})
   string(REGEX REPLACE ".in\$" "" file ${in_file})
+  string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}" file ${file})
   message(STATUS "creating file ${file}")
   configure_file(${in_file} ${file} @ONLY)
 endforeach()
