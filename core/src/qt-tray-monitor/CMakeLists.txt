@@ -1,6 +1,6 @@
 #   BAREOS® - Backup Archiving REcovery Open Sourced
 #
-#   Copyright (C) 2017-2019 Bareos GmbH & Co. KG
+#   Copyright (C) 2017-2020 Bareos GmbH & Co. KG
 #
 #   This program is Free Software; you can redistribute it and/or
 #   modify it under the terms of version three of the GNU Affero General Public
@@ -91,10 +91,10 @@ install(
   SCRIPT ${PROJECT_SOURCE_DIR}/cmake/install-tray-monitor-configfiles.cmake
 )
 
-install(FILES bareos-tray-monitor.desktop
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/bareos-tray-monitor.desktop
         DESTINATION ${datarootdir}/applications/
 )
-install(FILES bareos-tray-monitor.desktop
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/bareos-tray-monitor.desktop
         DESTINATION ${sysconfdir}/xdg/autostart/
 )
 install(FILES bareos-tray-monitor.xpm DESTINATION ${datarootdir}/pixmaps/)
