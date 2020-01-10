@@ -123,6 +123,9 @@ endif()
 # if (${cxx_compiler_will_warn_sign_conversion}) set (CMAKE_CXX_FLAGS
 # "${CMAKE_CXX_FLAGS} -Wsign-conversion") endif()
 
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/src)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/src/include)
+
 if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   include_directories(/usr/include)
 endif()
@@ -135,7 +138,6 @@ set(CMAKE_MODULE_PATH
 set(host ${CMAKE_SYSTEM})
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 
 include(BareosExtractVersionInfo)
 include(BareosLocalBuildDefinitions OPTIONAL
@@ -689,7 +691,7 @@ if(${lmdb})
 endif()
 
 # info what the config files need to be installed
-#####  PLUGINS  ############
+# PLUGINS  ####
 set(PLUGINS python-ldap-conf.d)
 list(APPEND PLUGINS python-ovirt-conf.d)
 
