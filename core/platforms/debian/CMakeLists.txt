@@ -1,6 +1,6 @@
 #   BAREOS® - Backup Archiving REcovery Open Sourced
 #
-#   Copyright (C) 2017-2019 Bareos GmbH & Co. KG
+#   Copyright (C) 2017-2020 Bareos GmbH & Co. KG
 #
 #   This program is Free Software; you can redistribute it and/or
 #   modify it under the terms of version three of the GNU Affero General Public
@@ -24,7 +24,7 @@ message(STATUS "installing startfiles to ${DESTSTARTDIR}")
 # Install autostart fd
 install(
   FILES
-    "${CMAKE_CURRENT_LIST_DIR}/../../debian/bareos-filedaemon.bareos-fd.init"
+    "${CMAKE_CURRENT_BINARY_DIR}/../../debian/bareos-filedaemon.bareos-fd.init"
   DESTINATION "${DESTSTARTDIR}/bareos-fd"
   PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE
               WORLD_READ WORLD_EXECUTE
@@ -32,7 +32,7 @@ install(
 
 # Install autostart sd
 install(
-  FILES "${CMAKE_CURRENT_LIST_DIR}/../../debian/bareos-storage.bareos-sd.init"
+  FILES "${CMAKE_CURRENT_BINARY_DIR}/../../debian/bareos-storage.bareos-sd.init"
   DESTINATION "${DESTSTARTDIR}/bareos-sd"
   PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE
               WORLD_READ WORLD_EXECUTE
@@ -40,7 +40,8 @@ install(
 
 # Install autostart dir
 install(
-  FILES "${CMAKE_CURRENT_LIST_DIR}/../../debian/bareos-director.bareos-dir.init"
+  FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/../../debian/bareos-director.bareos-dir.init"
   DESTINATION "${DESTSTARTDIR}/bareos-dir"
   PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE
               WORLD_READ WORLD_EXECUTE
@@ -50,7 +51,7 @@ install(
 
 # dbconfig
 install(
-  FILES "${CMAKE_CURRENT_LIST_DIR}/../debian/set_dbconfig_vars.sh"
+  FILES "${CMAKE_CURRENT_BINARY_DIR}/../debian/set_dbconfig_vars.sh"
   DESTINATION "${scriptdir}/"
   PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE
               WORLD_READ WORLD_EXECUTE
@@ -75,7 +76,7 @@ macro(bareos_install_sql_files_to_dbconfig_common)
 
   install(
     FILES
-      "${CMAKE_CURRENT_LIST_DIR}/../../src/cats/ddl/creates/${DB_CONFIG_COMMON_BAREOS_DB_NAME}.sql"
+      "${CMAKE_CURRENT_BINARY_DIR}/../../src/cats/ddl/creates/${DB_CONFIG_COMMON_BAREOS_DB_NAME}.sql"
     DESTINATION
       "${CMAKE_INSTALL_FULL_DATAROOTDIR}/dbconfig-common/data/bareos-database-common/install/"
     RENAME "${DB_CONFIG_COMMON_DEBIAN_DB_NAME}"
@@ -83,7 +84,7 @@ macro(bareos_install_sql_files_to_dbconfig_common)
   file(
     GLOB
     SQLFILES
-    "${CMAKE_CURRENT_LIST_DIR}/../../src/cats/ddl/updates/${DB_CONFIG_COMMON_BAREOS_DB_NAME}.*_*.sql"
+    "${CMAKE_CURRENT_BINARY_DIR}/../../src/cats/ddl/updates/${DB_CONFIG_COMMON_BAREOS_DB_NAME}.*_*.sql"
   )
   foreach(SQLFILE ${SQLFILES})
     get_filename_component(BASENAME ${SQLFILE} NAME)
@@ -115,7 +116,7 @@ macro(bareos_install_sql_files_to_dbconfig_common)
   )
   install(
     FILES
-      "${CMAKE_CURRENT_LIST_DIR}/dbconfig-common/scripts/bareos-database-common/upgrade/pgsql/2170"
+      "${CMAKE_CURRENT_BINARY_DIR}/dbconfig-common/scripts/bareos-database-common/upgrade/pgsql/2170"
     DESTINATION
       "${CMAKE_INSTALL_FULL_DATAROOTDIR}/dbconfig-common/scripts/bareos-database-common/upgrade/${DB_CONFIG_COMMON_DEBIAN_DB_NAME}"
     RENAME 2170
@@ -124,7 +125,7 @@ macro(bareos_install_sql_files_to_dbconfig_common)
   )
   install(
     FILES
-      "${CMAKE_CURRENT_LIST_DIR}/dbconfig-common/scripts/bareos-database-common/upgrade/pgsql/2170"
+      "${CMAKE_CURRENT_BINARY_DIR}/dbconfig-common/scripts/bareos-database-common/upgrade/pgsql/2170"
     DESTINATION
       "${CMAKE_INSTALL_FULL_DATAROOTDIR}/dbconfig-common/scripts/bareos-database-common/upgrade/${DB_CONFIG_COMMON_DEBIAN_DB_NAME}"
     RENAME 2003
@@ -133,7 +134,7 @@ macro(bareos_install_sql_files_to_dbconfig_common)
   )
   install(
     FILES
-      "${CMAKE_CURRENT_LIST_DIR}/dbconfig-common/scripts/bareos-database-common/upgrade/pgsql/2170"
+      "${CMAKE_CURRENT_BINARY_DIR}/dbconfig-common/scripts/bareos-database-common/upgrade/pgsql/2170"
     DESTINATION
       "${CMAKE_INSTALL_FULL_DATAROOTDIR}/dbconfig-common/scripts/bareos-database-common/upgrade/${DB_CONFIG_COMMON_DEBIAN_DB_NAME}"
     RENAME 2004
@@ -147,11 +148,11 @@ macro(bareos_install_sql_files_to_dbconfig_common)
       "${CMAKE_INSTALL_FULL_DATAROOTDIR}/dbconfig-common/data/bareos-database-common/upgrade-dbadmin/${DB_CONFIG_COMMON_DEBIAN_DB_NAME}"
   )
   if(EXISTS
-     "${CMAKE_CURRENT_LIST_DIR}/share/dbconfig-common/data/bareos-database-common/upgrade-dbadmin/${DB_CONFIG_COMMON_DEBIAN_DB_NAME}/2170"
+     "${CMAKE_CURRENT_BINARY_DIR}/share/dbconfig-common/data/bareos-database-common/upgrade-dbadmin/${DB_CONFIG_COMMON_DEBIAN_DB_NAME}/2170"
   )
     install(
       FILES
-        "${CMAKE_CURRENT_LIST_DIR}/share/dbconfig-common/data/bareos-database-common/upgrade-dbadmin/${DB_CONFIG_COMMON_DEBIAN_DB_NAME}/2170"
+        "${CMAKE_CURRENT_BINARY_DIR}/share/dbconfig-common/data/bareos-database-common/upgrade-dbadmin/${DB_CONFIG_COMMON_DEBIAN_DB_NAME}/2170"
       DESTINATION
         "${CMAKE_INSTALL_FULL_DATAROOTDIR}/dbconfig-common/data/bareos-database-common/upgrade-dbadmin/${DB_CONFIG_COMMON_DEBIAN_DB_NAME}"
       PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE
@@ -159,7 +160,7 @@ macro(bareos_install_sql_files_to_dbconfig_common)
     )
     install(
       FILES
-        "${CMAKE_CURRENT_LIST_DIR}/share/dbconfig-common/data/bareos-database-common/upgrade-dbadmin/${DB_CONFIG_COMMON_DEBIAN_DB_NAME}/2170"
+        "${CMAKE_CURRENT_BINARY_DIR}/share/dbconfig-common/data/bareos-database-common/upgrade-dbadmin/${DB_CONFIG_COMMON_DEBIAN_DB_NAME}/2170"
       DESTINATION
         "${CMAKE_INSTALL_FULL_DATAROOTDIR}/dbconfig-common/data/bareos-database-common/upgrade-dbadmin/${DB_CONFIG_COMMON_DEBIAN_DB_NAME}"
       RENAME 2003
@@ -168,7 +169,7 @@ macro(bareos_install_sql_files_to_dbconfig_common)
     )
     install(
       FILES
-        "${CMAKE_CURRENT_LIST_DIR}/share/dbconfig-common/data/bareos-database-common/upgrade-dbadmin/${DB_CONFIG_COMMON_DEBIAN_DB_NAME}/2170"
+        "${CMAKE_CURRENT_BINARY_DIR}/share/dbconfig-common/data/bareos-database-common/upgrade-dbadmin/${DB_CONFIG_COMMON_DEBIAN_DB_NAME}/2170"
       DESTINATION
         "${CMAKE_INSTALL_FULL_DATAROOTDIR}/dbconfig-common/data/bareos-database-common/upgrade-dbadmin/${DB_CONFIG_COMMON_DEBIAN_DB_NAME}"
       RENAME 2004

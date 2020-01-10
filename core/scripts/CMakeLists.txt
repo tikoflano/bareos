@@ -1,6 +1,6 @@
 #   BAREOS® - Backup Archiving REcovery Open Sourced
 #
-#   Copyright (C) 2017-2019 Bareos GmbH & Co. KG
+#   Copyright (C) 2017-2020 Bareos GmbH & Co. KG
 #
 #   This program is Free Software; you can redistribute it and/or
 #   modify it under the terms of version three of the GNU Affero General Public
@@ -18,14 +18,15 @@
 #   02110-1301, USA.
 
 install(
-  FILES bareos btraceback
+  FILES ${CMAKE_CURRENT_BINARY_DIR}/bareos
+        ${CMAKE_CURRENT_BINARY_DIR}/btraceback
   PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE
               WORLD_READ WORLD_EXECUTE
   DESTINATION "${sbindir}"
 )
 
 install(
-  FILES bareos-ctl-fd
+  FILES ${CMAKE_CURRENT_BINARY_DIR}/bareos-ctl-fd
   PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE
               WORLD_READ WORLD_EXECUTE
   DESTINATION "${scriptdir}"
@@ -33,8 +34,13 @@ install(
 )
 
 install(
-  FILES bareos btraceback.gdb btraceback.dbx btraceback.mdb bareos-config
-        bareos-config-lib.sh bareos-ctl-funcs
+  FILES btraceback.gdb
+        btraceback.dbx
+        btraceback.mdb
+        bareos-ctl-funcs
+        ${CMAKE_CURRENT_BINARY_DIR}/bareos
+        ${CMAKE_CURRENT_BINARY_DIR}/bareos-config
+        ${CMAKE_CURRENT_BINARY_DIR}/bareos-config-lib.sh
   PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE
               WORLD_READ WORLD_EXECUTE
   DESTINATION "${scriptdir}"
@@ -42,17 +48,24 @@ install(
 
 if(NOT client-only)
   install(
-    FILES mtx-changer disk-changer bareos-explorer bareos-glusterfind-wrapper
-          bareos-ctl-dir bareos-ctl-sd bareos-ctl-funcs
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/mtx-changer
+          ${CMAKE_CURRENT_BINARY_DIR}/disk-changer
+          ${CMAKE_CURRENT_BINARY_DIR}/bareos-explorer
+          ${CMAKE_CURRENT_BINARY_DIR}/bareos-glusterfind-wrapper
+          ${CMAKE_CURRENT_BINARY_DIR}/bareos-ctl-dir
+          ${CMAKE_CURRENT_BINARY_DIR}/bareos-ctl-sd
+          bareos-ctl-funcs
     PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE
                 WORLD_READ WORLD_EXECUTE
     DESTINATION "${scriptdir}"
   )
 
-  install(FILES mtx-changer.conf bareos-regress.conf DESTINATION "${confdir}")
+  install(FILES mtx-changer.conf ${CMAKE_CURRENT_BINARY_DIR}/bareos-regress.conf
+          DESTINATION "${confdir}"
+  )
 
   install(
-    FILES logrotate
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/logrotate
     DESTINATION "${sysconfdir}/logrotate.d"
     RENAME bareos-dir
   )

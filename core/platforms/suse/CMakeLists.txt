@@ -1,6 +1,6 @@
 #   BAREOS® - Backup Archiving REcovery Open Sourced
 #
-#   Copyright (C) 2017-2019 Bareos GmbH & Co. KG
+#   Copyright (C) 2017-2020 Bareos GmbH & Co. KG
 #
 #   This program is Free Software; you can redistribute it and/or
 #   modify it under the terms of version three of the GNU Affero General Public
@@ -26,21 +26,21 @@ install(DIRECTORY DESTINATION ${DESTSTARTDIR})
 
 # Install autostart fd
 install(
-  FILES "${CMAKE_CURRENT_LIST_DIR}/bareos-fd"
+  FILES "${CMAKE_CURRENT_BINARY_DIR}/bareos-fd"
   DESTINATION "${DESTSTARTDIR}"
   PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE
               WORLD_READ WORLD_EXECUTE
 )
 # Install autostart sd
 install(
-  FILES "${CMAKE_CURRENT_LIST_DIR}/bareos-sd"
+  FILES "${CMAKE_CURRENT_BINARY_DIR}/bareos-sd"
   DESTINATION "${DESTSTARTDIR}"
   PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE
               WORLD_READ WORLD_EXECUTE
 )
 # Install autostart dir
 install(
-  FILES "${CMAKE_CURRENT_LIST_DIR}/bareos-dir"
+  FILES "${CMAKE_CURRENT_BINARY_DIR}/bareos-dir"
   DESTINATION "${DESTSTARTDIR}"
   PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE
               WORLD_READ WORLD_EXECUTE
@@ -50,19 +50,19 @@ message(STATUS "installing firewall files to ${DESTSTARTDIR}")
 
 # Install firewall fd
 install(
-  FILES "${CMAKE_CURRENT_LIST_DIR}/bareos-fd.fw"
+  FILES "${CMAKE_CURRENT_BINARY_DIR}/bareos-fd.fw"
   DESTINATION "${FIREWALL_DIR}"
   RENAME bareos-fd
 )
 # Install firewall sd
 install(
-  FILES "${CMAKE_CURRENT_LIST_DIR}/bareos-sd.fw"
+  FILES "${CMAKE_CURRENT_BINARY_DIR}/bareos-sd.fw"
   DESTINATION "${FIREWALL_DIR}"
   RENAME bareos-sd
 )
 # Install firewall dir
 install(
-  FILES "${CMAKE_CURRENT_LIST_DIR}/bareos-dir.fw"
+  FILES "${CMAKE_CURRENT_BINARY_DIR}/bareos-dir.fw"
   DESTINATION "${FIREWALL_DIR}"
   RENAME bareos-dir
 )

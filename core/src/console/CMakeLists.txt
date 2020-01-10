@@ -1,6 +1,6 @@
 #   BAREOS® - Backup Archiving REcovery Open Sourced
 #
-#   Copyright (C) 2017-2019 Bareos GmbH & Co. KG
+#   Copyright (C) 2017-2020 Bareos GmbH & Co. KG
 #
 #   This program is Free Software; you can redistribute it and/or
 #   modify it under the terms of version three of the GNU Affero General Public
@@ -45,18 +45,10 @@ endif()
 
 target_link_libraries(bconsole ${CONSOLE_LINK_LIBRARIES})
 
+install(TARGETS bconsole DESTINATION "${bindir}" COMPONENT bconsole)
+install(TARGETS bconsole DESTINATION "${sbindir}" COMPONENT bconsole)
 install(
-  TARGETS bconsole
-  DESTINATION "${bindir}"
-  COMPONENT bconsole
-)
-install(
-  TARGETS bconsole
-  DESTINATION "${sbindir}"
-  COMPONENT bconsole
-)
-install(
-  FILES bconsole.conf
+  FILES ${CMAKE_CURRENT_BINARY_DIR}/bconsole.conf
   DESTINATION "${configtemplatedir}"
   COMPONENT bconsole
 )

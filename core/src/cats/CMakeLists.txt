@@ -1,6 +1,6 @@
 #   BAREOS® - Backup Archiving REcovery Open Sourced
 #
-#   Copyright (C) 2017-2019 Bareos GmbH & Co. KG
+#   Copyright (C) 2017-2020 Bareos GmbH & Co. KG
 #
 #   This program is Free Software; you can redistribute it and/or
 #   modify it under the terms of version three of the GNU Affero General Public
@@ -45,9 +45,8 @@ set(POSTGRESQL_SRCS postgresql.cc ${LIBBAREOSCATS_SRCS})
 add_library(bareossql SHARED ${LIBBAREOSSQL_SRCS})
 
 set_target_properties(
-  bareossql
-  PROPERTIES VERSION "${BAREOS_NUMERIC_VERSION}" SOVERSION
-                                                 "${BAREOS_VERSION_MAJOR}"
+  bareossql PROPERTIES VERSION "${BAREOS_NUMERIC_VERSION}" SOVERSION
+                       "${BAREOS_VERSION_MAJOR}"
 )
 target_link_libraries(bareossql bareoscats bareos)
 
@@ -61,9 +60,8 @@ list(LENGTH db_backends nr_db_backends)
 add_library(bareoscats SHARED ${LIBBAREOSCATS_SRCS})
 target_link_libraries(bareoscats bareos)
 set_target_properties(
-  bareoscats
-  PROPERTIES VERSION ${BAREOS_NUMERIC_VERSION} SOVERSION
-                                               "${BAREOS_VERSION_MAJOR}"
+  bareoscats PROPERTIES VERSION ${BAREOS_NUMERIC_VERSION} SOVERSION
+                        "${BAREOS_VERSION_MAJOR}"
 )
 install(TARGETS bareoscats DESTINATION ${libdir})
 
@@ -111,15 +109,15 @@ endif()
 install(TARGETS bareossql DESTINATION ${libdir})
 
 install(
-  FILES create_bareos_database
-        update_bareos_tables
-        make_bareos_tables
-        grant_bareos_privileges
-        drop_bareos_tables
-        drop_bareos_database
-        make_catalog_backup.pl
-        make_catalog_backup
-        delete_catalog_backup
+  FILES ${CMAKE_CURRENT_BINARY_DIR}/create_bareos_database
+        ${CMAKE_CURRENT_BINARY_DIR}/update_bareos_tables
+        ${CMAKE_CURRENT_BINARY_DIR}/make_bareos_tables
+        ${CMAKE_CURRENT_BINARY_DIR}/grant_bareos_privileges
+        ${CMAKE_CURRENT_BINARY_DIR}/drop_bareos_tables
+        ${CMAKE_CURRENT_BINARY_DIR}/drop_bareos_database
+        ${CMAKE_CURRENT_BINARY_DIR}/make_catalog_backup.pl
+        ${CMAKE_CURRENT_BINARY_DIR}/make_catalog_backup
+        ${CMAKE_CURRENT_BINARY_DIR}/delete_catalog_backup
   PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE
               WORLD_READ WORLD_EXECUTE
   DESTINATION ${scriptdir}

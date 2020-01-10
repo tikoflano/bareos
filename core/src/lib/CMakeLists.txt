@@ -1,6 +1,6 @@
 #   BAREOS® - Backup Archiving REcovery Open Sourced
 #
-#   Copyright (C) 2017-2019 Bareos GmbH & Co. KG
+#   Copyright (C) 2017-2020 Bareos GmbH & Co. KG
 #
 #   This program is Free Software; you can redistribute it and/or
 #   modify it under the terms of version three of the GNU Affero General Public
@@ -22,7 +22,7 @@ if(NOT client-only)
       ../include/baconfig.h
       ../include/bareos.h
       ../include/bc_types.h
-      ../include/config.h
+      ${CMAKE_CURRENT_BINARY_DIR}/../include/config.h
       ../include/jcr.h
       version.h
       address_conf.h

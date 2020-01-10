@@ -1,6 +1,6 @@
 #   BAREOS® - Backup Archiving REcovery Open Sourced
 #
-#   Copyright (C) 2019-2019 Bareos GmbH & Co. KG
+#   Copyright (C) 2019-2020 Bareos GmbH & Co. KG
 #
 #   This program is Free Software; you can redistribute it and/or
 #   modify it under the terms of version three of the GNU Affero General Public
@@ -26,11 +26,11 @@ file(
        "AppCenter/bareos-webui_screenshot.png"
        "../../src/images/bareos-logo.svg"
        "../../src/images/bareos-logo-full.svg"
-  DESTINATION "${PROJECT_SOURCE_DIR}/AppCenter/"
+  DESTINATION "${PROJECT_BINARY_DIR}/AppCenter/"
 )
 
-file(COPY "${CMAKE_CURRENT_LIST_DIR}/conffiles/"
-     DESTINATION "${PROJECT_SOURCE_DIR}/conffiles/"
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/conffiles/"
+     DESTINATION "${PROJECT_BINARY_DIR}/conffiles/"
 )
 
 add_custom_command(
@@ -92,8 +92,8 @@ install(PROGRAMS "bareos-dir-restart" "bareos-dir-restart-on-change"
         DESTINATION "/usr/share/univention-bareos/"
 )
 
-install(CODE "set(PROJECT_SOURCE_DIR \"${PROJECT_SOURCE_DIR}\")")
+install(CODE "set(PROJECT_SOURCE_DIR \"${PROJECT_BINARY_DIR}\")")
 install(
   SCRIPT
-    ${PROJECT_SOURCE_DIR}/cmake/install-univention-extra-configuration.cmake
+    ${PROJECT_BINARY_DIR}/cmake/install-univention-extra-configuration.cmake
 )

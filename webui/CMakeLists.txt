@@ -131,7 +131,7 @@ else()
 endif()
 
 if(NOT client-only)
-  install(FILES version.php init_autoloader.php
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/version.php init_autoloader.php
           DESTINATION ${SHARE_INSTALL_PREFIX}/bareos-webui
   )
   install(DIRECTORY tests config data module public vendor
@@ -152,6 +152,10 @@ if(NOT client-only)
   )
   install(FILES install/apache/bareos-webui.conf DESTINATION ${HTTPD_CONF}/)
 
-  install(FILES install/directors.ini DESTINATION ${webuiconfdir})
-  install(FILES install/configuration.ini DESTINATION ${webuiconfdir})
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/install/directors.ini
+          DESTINATION ${webuiconfdir}
+  )
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/install/configuration.ini
+          DESTINATION ${webuiconfdir}
+  )
 endif()
