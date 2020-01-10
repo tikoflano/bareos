@@ -980,6 +980,7 @@ rm -f %{buildroot}/%{script_dir}/bareos-glusterfind-wrapper
 rm %{buildroot}%{_mandir}/man1/bareos-tray-monitor.*
 %endif
 
+pushd %{CMAKE_BUILDDIR}
 # install systemd service files
 %if 0%{?systemd_support}
 install -d -m 755 %{buildroot}%{_unitdir}
@@ -992,6 +993,7 @@ ln -sf service %{buildroot}%{_sbindir}/rcbareos-fd
 ln -sf service %{buildroot}%{_sbindir}/rcbareos-sd
 %endif
 %endif
+popd
 
 # Create the Readme files for the meta packages
 [ -d %{buildroot}%{_docdir}/%{name}/ ]  || install -d -m 755 %{buildroot}%{_docdir}/%{name}
