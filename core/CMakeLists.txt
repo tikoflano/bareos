@@ -1,6 +1,6 @@
 #   BAREOS® - Backup Archiving REcovery Open Sourced
 #
-#   Copyright (C) 2017-2019 Bareos GmbH & Co. KG
+#   Copyright (C) 2017-2020 Bareos GmbH & Co. KG
 #
 #   This program is Free Software; you can redistribute it and/or
 #   modify it under the terms of version three of the GNU Affero General Public
@@ -136,12 +136,6 @@ set(host ${CMAKE_SYSTEM})
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# run git-info to collect sourcecode info
-file(MAKE_DIRECTORY build)
-execute_process(
-  COMMAND ${PROJECT_SOURCE_DIR}/scripts/git-info.sh
-  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/build
-)
 
 include(BareosExtractVersionInfo)
 include(BareosLocalBuildDefinitions OPTIONAL
