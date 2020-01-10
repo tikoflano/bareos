@@ -482,7 +482,7 @@ if(ENABLE_WEBUI_SELENIUM_TEST)
       "${CMAKE_SOURCE_DIR}/systemtests/tests/webui-common/directors.ini.in"
       "${current_test_directory}/etc/bareos-webui/directors.ini" @ONLY
     )
-    file(COPY "${CMAKE_SOURCE_DIR}/webui/install/configuration.ini"
+    file(COPY "${CMAKE_BINARY_DIR}/webui/install/configuration.ini"
          DESTINATION "${current_test_directory}/etc/bareos-webui/"
     )
     configure_file(
