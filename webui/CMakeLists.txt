@@ -1,6 +1,6 @@
 #   BAREOS® - Backup Archiving REcovery Open Sourced
 #
-#   Copyright (C) 2018-2019 Bareos GmbH & Co. KG
+#   Copyright (C) 2018-2020 Bareos GmbH & Co. KG
 #
 #   This program is Free Software; you can redistribute it and/or
 #   modify it under the terms of version three of the GNU Affero General Public
@@ -88,25 +88,25 @@ endif()
 
 configure_file(
   config/autoload/global.php.in
-  ${CMAKE_CURRENT_SOURCE_DIR}/config/autoload/global.php @ONLY
+  ${CMAKE_CURRENT_BINARY_DIR}/config/autoload/global.php @ONLY
 )
 configure_file(
-  install/directors.ini.in ${CMAKE_CURRENT_SOURCE_DIR}/install/directors.ini
+  install/directors.ini.in ${CMAKE_CURRENT_BINARY_DIR}/install/directors.ini
   @ONLY
 )
 configure_file(
   install/configuration.ini.in
-  ${CMAKE_CURRENT_SOURCE_DIR}/install/configuration.ini @ONLY
+  ${CMAKE_CURRENT_BINARY_DIR}/install/configuration.ini @ONLY
 )
 
-configure_file(version.php.in ${CMAKE_CURRENT_SOURCE_DIR}/version.php @ONLY)
+configure_file(version.php.in ${CMAKE_CURRENT_BINARY_DIR}/version.php @ONLY)
 configure_file(
   module/Application/view/layout/layout.phtml.in
-  ${CMAKE_CURRENT_SOURCE_DIR}/module/Application/view/layout/layout.phtml @ONLY
+  ${CMAKE_CURRENT_BINARY_DIR}/module/Application/view/layout/layout.phtml @ONLY
 )
 configure_file(
   module/Application/view/layout/login.phtml.in
-  ${CMAKE_CURRENT_SOURCE_DIR}/module/Application/view/layout/login.phtml @ONLY
+  ${CMAKE_CURRENT_BINARY_DIR}/module/Application/view/layout/login.phtml @ONLY
 )
 
 set(WEBUI_DIR ${SHARE_INSTALL_PREFIX}/bareos-webui)
@@ -114,16 +114,16 @@ set(WEBUI_TESTS_DIR ${WEBUI_DIR}/tests/regress)
 if(PHP)
   configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/regress/webui-bsock-connection-test.in
-    ${CMAKE_CURRENT_SOURCE_DIR}/tests/regress/webui-bsock-connection-test @ONLY
+    ${CMAKE_CURRENT_BINARY_DIR}/tests/regress/webui-bsock-connection-test @ONLY
   )
   configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/regress/webui-bsock-connection-test-tls.in
-    ${CMAKE_CURRENT_SOURCE_DIR}/tests/regress/webui-bsock-connection-test-tls
+    ${CMAKE_CURRENT_BINARY_DIR}/tests/regress/webui-bsock-connection-test-tls
     @ONLY
   )
   configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/regress/webui-bsock-connection-test-tls.php.in
-    ${CMAKE_CURRENT_SOURCE_DIR}/tests/regress/webui-bsock-connection-test-tls.php
+    ${CMAKE_CURRENT_BINARY_DIR}/tests/regress/webui-bsock-connection-test-tls.php
     @ONLY
   )
 else()
