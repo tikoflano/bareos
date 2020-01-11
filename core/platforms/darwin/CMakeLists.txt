@@ -18,13 +18,13 @@
 #   02110-1301, USA.
 
 install(
-  FILES resources/com.bareos.bareos-fd.plist
+  FILES ${CMAKE_CURRENT_BINARY_DIR}/resources/com.bareos.bareos-fd.plist
   DESTINATION "${scriptdir}"
   COMPONENT filedaemon
 )
 
 install(
-  FILES resources/uninstall-bareos
+  FILES ${CMAKE_CURRENT_BINARY_DIR}/resources/uninstall-bareos
   DESTINATION "${scriptdir}"
   PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE
               WORLD_READ WORLD_EXECUTE
