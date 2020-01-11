@@ -1,6 +1,6 @@
 #   BAREOS® - Backup Archiving REcovery Open Sourced
 #
-#   Copyright (C) 2017-2019 Bareos GmbH & Co. KG
+#   Copyright (C) 2017-2020 Bareos GmbH & Co. KG
 #
 #   This program is Free Software; you can redistribute it and/or
 #   modify it under the terms of version three of the GNU Affero General Public
@@ -240,7 +240,7 @@ install(TARGETS bareos-sd bls bextract bscan btape bcopy
 install(CODE "set(PLUGINS \"${PLUGINS}\")")
 install(CODE "set(BACKENDS \"${BACKENDS}\")")
 install(CODE "set(configtemplatedir \"${configtemplatedir}\")")
-install(CODE "set(SRC_DIR \"${PROJECT_SOURCE_DIR}\")")
+install(CODE "set(SRC_DIR \"${PROJECT_BINARY_DIR}\")")
 install(SCRIPT ${PROJECT_SOURCE_DIR}/cmake/install-stored-configfiles.cmake)
 
 install(DIRECTORY DESTINATION "../${archivedir}")

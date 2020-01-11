@@ -139,7 +139,7 @@ if(${nr_db_backends} EQUAL 1)
     CODE "set(CMAKE_SHARED_LIBRARY_SUFFIX \"${CMAKE_SHARED_LIBRARY_SUFFIX}\")"
   )
   install(CODE "set(VERSION \"${BAREOS_NUMERIC_VERSION}\")")
-  install(CODE "set(SRC_DIR \"${PROJECT_SOURCE_DIR}\")")
+  install(CODE "set(SRC_DIR \"${PROJECT_BINARY_DIR}\")")
 
   install(
     SCRIPT ${PROJECT_SOURCE_DIR}/cmake/bareos-symlink-default-db-backend.cmake
