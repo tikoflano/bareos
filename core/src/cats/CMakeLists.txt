@@ -71,7 +71,7 @@ if(HAVE_SQLITE3)
   install(TARGETS bareoscats-sqlite3 DESTINATION ${backenddir})
 
   install(
-    DIRECTORY ddl
+    DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ddl
     DESTINATION ${scriptdir}
     FILES_MATCHING
     PATTERN *sqlite3*.sql
@@ -84,7 +84,7 @@ if(HAVE_MYSQL)
   install(TARGETS bareoscats-mysql DESTINATION ${backenddir})
 
   install(
-    DIRECTORY ddl
+    DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ddl
     DESTINATION ${scriptdir}
     FILES_MATCHING
     PATTERN *mysql*.sql
@@ -99,7 +99,7 @@ if(HAVE_POSTGRESQL)
   install(TARGETS bareoscats-postgresql DESTINATION ${backenddir})
 
   install(
-    DIRECTORY ddl
+    DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ddl
     DESTINATION ${scriptdir}
     FILES_MATCHING
     PATTERN *postgresql*.sql
@@ -124,7 +124,7 @@ install(
 )
 
 install(
-  DIRECTORY ddl
+  DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ddl
   DESTINATION ${scriptdir}
   PATTERN version.map
   PATTERN *.in EXCLUDE
