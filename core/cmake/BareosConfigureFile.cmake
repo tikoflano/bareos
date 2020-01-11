@@ -23,7 +23,9 @@
 
 file(GLOB_RECURSE IN_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.in")
 file(GLOB_RECURSE CONF_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.conf")
-foreach(in_file ${IN_FILES} ${CONF_FILES})
+file(GLOB_RECURSE EXAMPLE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.example")
+
+foreach(in_file ${IN_FILES} ${CONF_FILES} ${EXAMPLE_FILES})
   string(REGEX REPLACE ".in\$" "" file ${in_file})
   string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}" file ${file})
   message(STATUS "configure file ${in_file} to ${file}")
