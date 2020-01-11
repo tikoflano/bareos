@@ -1037,6 +1037,9 @@ echo "This is a meta package to install a full bareos system" > %{buildroot}%{_d
 %{_sysconfdir}/rc.d/init.d/bareos-dir
 %endif
 %endif
+
+find $RPM_BUILD_ROOT | grep bareos-dir.d
+
 %attr(0640, %{director_daemon_user}, %{daemon_group}) %config(noreplace) %{_sysconfdir}/%{name}/bareos-dir.d/catalog/MyCatalog.conf
 %attr(0640, %{director_daemon_user}, %{daemon_group}) %config(noreplace) %{_sysconfdir}/%{name}/bareos-dir.d/client/bareos-fd.conf
 %attr(0640, %{director_daemon_user}, %{daemon_group}) %config(noreplace) %{_sysconfdir}/%{name}/bareos-dir.d/console/bareos-mon.conf
