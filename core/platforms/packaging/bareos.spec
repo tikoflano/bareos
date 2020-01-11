@@ -995,6 +995,10 @@ ln -sf service %{buildroot}%{_sbindir}/rcbareos-sd
 %endif
 popd
 
+pwd
+
+find .. | grep bareos-dir.d
+
 # Create the Readme files for the meta packages
 [ -d %{buildroot}%{_docdir}/%{name}/ ]  || install -d -m 755 %{buildroot}%{_docdir}/%{name}
 echo "This meta package emulates the former bareos-client package" > %{buildroot}%{_docdir}/%{name}/README.bareos-client
@@ -1038,7 +1042,6 @@ echo "This is a meta package to install a full bareos system" > %{buildroot}%{_d
 %endif
 %endif
 
-find $RPM_BUILD_ROOT | grep bareos-dir.d
 
 %attr(0640, %{director_daemon_user}, %{daemon_group}) %config(noreplace) %{_sysconfdir}/%{name}/bareos-dir.d/catalog/MyCatalog.conf
 %attr(0640, %{director_daemon_user}, %{daemon_group}) %config(noreplace) %{_sysconfdir}/%{name}/bareos-dir.d/client/bareos-fd.conf
