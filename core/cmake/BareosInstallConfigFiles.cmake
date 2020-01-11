@@ -1,6 +1,6 @@
 #   BAREOS® - Backup Archiving REcovery Open Sourced
 #
-#   Copyright (C) 2017-2019 Bareos GmbH & Co. KG
+#   Copyright (C) 2017-2020 Bareos GmbH & Co. KG
 #
 #   This program is Free Software; you can redistribute it and/or
 #   modify it under the terms of version three of the GNU Affero General Public
@@ -67,7 +67,7 @@ macro(BareosInstallConfigFiles CONFDIR CONFIGBASEDIRECTORY PLUGINS BACKENDS
         file(RENAME "${configfile}.new" "${configfile}")
       else()
         message(
-          STATUS "${resname}/${fname} as ${resname}/${fname} (new installation)"
+          STATUS "${resname}/${fname} as ${DESTCONFDIR}/${resname}/${fname} (new installation)"
         )
         file(COPY "${configfile}" DESTINATION "${DESTCONFDIR}/${resname}")
       endif()
