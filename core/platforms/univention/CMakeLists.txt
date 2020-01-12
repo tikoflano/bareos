@@ -92,6 +92,14 @@ install(PROGRAMS "bareos-dir-restart" "bareos-dir-restart-on-change"
         DESTINATION "/usr/share/univention-bareos/"
 )
 
+message(
+  "copying ${CMAKE_CURRENT_BINARY_DIR}/scripts/bareos-config-lib.sh to ${CMAKE_CURRENT_SOURCE_DIR}/scripts"
+)
+file(COPY ${CMAKE_BINARY_DIR}/scripts/bareos-config-lib.sh
+     DESTINATION ${CMAKE_SOURCE_DIR}/scripts
+)
+
+
 install(CODE "set(PROJECT_SOURCE_DIR \"${PROJECT_SOURCE_DIR}\")")
 install(
   SCRIPT
