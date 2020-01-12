@@ -200,3 +200,10 @@ if(${_index} GREATER -1)
     BAREOS_DB_NAME mysql DEBIAN_DB_NAME mysql
   )
 endif()
+
+message(
+  "copying ${CMAKE_CURRENT_BINARY_DIR}/debian/control to ${CMAKE_CURRENT_SOURCE_DIR}/debian/control"
+)
+file(COPY ${CMAKE_CURRENT_BINARY_DIR}/debian/control
+          ${CMAKE_CURRENT_SOURCE_DIR}/debian/control
+)
