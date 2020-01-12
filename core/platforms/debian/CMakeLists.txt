@@ -204,6 +204,6 @@ endif()
 message(
   "copying ${CMAKE_CURRENT_BINARY_DIR}/debian/control to ${CMAKE_CURRENT_SOURCE_DIR}/debian/control"
 )
-file(COPY ${CMAKE_CURRENT_BINARY_DIR}/debian/control
-     DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/debian/control
+file(COPY ${CMAKE_BINARY_DIR}/debian/control
+     DESTINATION ${CMAKE_SOURCE_DIR}/debian/control
 )
