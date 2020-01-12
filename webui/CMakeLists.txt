@@ -86,6 +86,7 @@ else()
   set(HTTPD_CONF ${sysconfdir}/httpd/conf.d)
 endif()
 
+message("creating ${CMAKE_CURRENT_BINARY_DIR}/config/autoload/global.php")
 configure_file(
   config/autoload/global.php.in
   ${CMAKE_CURRENT_BINARY_DIR}/config/autoload/global.php @ONLY
