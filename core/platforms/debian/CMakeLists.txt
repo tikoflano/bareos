@@ -116,7 +116,7 @@ macro(bareos_install_sql_files_to_dbconfig_common)
   )
   install(
     FILES
-      "${CMAKE_CURRENT_BINARY_DIR}/dbconfig-common/scripts/bareos-database-common/upgrade/pgsql/2170"
+      "${CMAKE_CURRENT_SOURCE_DIR}/dbconfig-common/scripts/bareos-database-common/upgrade/pgsql/2170"
     DESTINATION
       "${CMAKE_INSTALL_FULL_DATAROOTDIR}/dbconfig-common/scripts/bareos-database-common/upgrade/${DB_CONFIG_COMMON_DEBIAN_DB_NAME}"
     RENAME 2170
@@ -125,7 +125,7 @@ macro(bareos_install_sql_files_to_dbconfig_common)
   )
   install(
     FILES
-      "${CMAKE_CURRENT_BINARY_DIR}/dbconfig-common/scripts/bareos-database-common/upgrade/pgsql/2170"
+      "${CMAKE_CURRENT_SOURCE_DIR}/dbconfig-common/scripts/bareos-database-common/upgrade/pgsql/2170"
     DESTINATION
       "${CMAKE_INSTALL_FULL_DATAROOTDIR}/dbconfig-common/scripts/bareos-database-common/upgrade/${DB_CONFIG_COMMON_DEBIAN_DB_NAME}"
     RENAME 2003
@@ -134,7 +134,7 @@ macro(bareos_install_sql_files_to_dbconfig_common)
   )
   install(
     FILES
-      "${CMAKE_CURRENT_BINARY_DIR}/dbconfig-common/scripts/bareos-database-common/upgrade/pgsql/2170"
+      "${CMAKE_CURRENT_SOURCE_DIR}/dbconfig-common/scripts/bareos-database-common/upgrade/pgsql/2170"
     DESTINATION
       "${CMAKE_INSTALL_FULL_DATAROOTDIR}/dbconfig-common/scripts/bareos-database-common/upgrade/${DB_CONFIG_COMMON_DEBIAN_DB_NAME}"
     RENAME 2004
