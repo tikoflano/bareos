@@ -3,7 +3,7 @@
 
    Copyright (C) 2000-2010 Free Software Foundation Europe e.V.
    Copyright (C) 2011-2012 Planets Communications B.V.
-   Copyright (C) 2013-2019 Bareos GmbH & Co. KG
+   Copyright (C) 2013-2020 Bareos GmbH & Co. KG
 
    This program is Free Software; you can redistribute it and/or
    modify it under the terms of version three of the GNU Affero General Public
@@ -150,7 +150,7 @@ void InitWinAPIWrapper();
 #define MAX_TIME_LENGTH 50
 
 /* Maximum Name length including EOS */
-#define MAX_NAME_LENGTH 128
+#define MAX_NAME_LENGTH 256
 
 /* Maximum escaped Name length including EOS 2*MAX_NAME_LENGTH+1 */
 #define MAX_ESCAPE_NAME_LENGTH 257
