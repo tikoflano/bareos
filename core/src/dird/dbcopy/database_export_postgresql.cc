@@ -164,11 +164,7 @@ static bool TableIsEmtpy(BareosDb* db, const std::string& table_name)
     throw std::runtime_error(err);
   }
 
-  if (db->SqlNumRows() > 0) {
-    std::cout << "DatabaseExportPostgresql: Table is not empty, skipping: ";
-    std::cout << table_name << std::endl;
-    return false;
-  }
+  if (db->SqlNumRows() > 0) { return false; }
   return true;
 }
 
@@ -185,9 +181,21 @@ bool DatabaseExportPostgresql::TableExists(const std::string& table_name)
 
 bool DatabaseExportPostgresql::StartTable(const std::string& table_name)
 {
-  if (!TableIsEmtpy(db_, table_name)) { return false; }
+  std::cout << "DatabaseExportPostgresql check if table exists: ";
+  std::cout << table_name << " ...";
+  if (!TableExists(table_name)) {
+    std::cout << table_name << " is not empty" << std::endl;
+    return false;
+  }
+  std::cout << table_name << " exists" << std::endl;
 
-  if (!TableExists(table_name)) { return false; }
+  std::cout << "DatabaseExportPostgresql check if table is empty: ";
+  std::cout << table_name << " ...";
+  if (!TableIsEmtpy(db_, table_name)) {
+    std::cout << table_name << " is not empty" << std::endl;
+    return false;
+  }
+  std::cout << table_name << " is empty" << std::endl;
 
   if (db_->SqlQuery("BEGIN")) {
     transaction_ = true;
