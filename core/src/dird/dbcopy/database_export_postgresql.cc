@@ -171,11 +171,7 @@ static bool TableIsEmtpy(BareosDb* db, const std::string& table_name)
 bool DatabaseExportPostgresql::TableExists(const std::string& table_name)
 {
   auto found = table_descriptions_->GetTableDescription(table_name);
-  if (found == nullptr) {
-    std::cout << "DatabaseExportPostgresql: Table not found, skipping: ";
-    std::cout << table_name << std::endl;
-    return false;
-  }
+  if (found == nullptr) { return false; }
   return true;
 }
 
