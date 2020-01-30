@@ -86,11 +86,11 @@ void DatabaseImportMysql::RunQuerySelectAllRows(
 {
   for (const auto& t : table_descriptions_->tables) {
     if (!exporter.StartTable(t.table_name)) {
-      std::cout << t.table_name << ": skipping" << std::endl;
+      std::cout << "--> skipping" << std::endl;
       continue;
     }
 
-    std::cout << t.table_name << ": copying ..." << std::endl;
+    std::cout << "--> copying..." << std::endl;
 
     std::string query{"SELECT `"};
     for (const auto& col : t.column_descriptions) {
@@ -117,7 +117,7 @@ void DatabaseImportMysql::RunQuerySelectAllRows(
     }
 
     exporter.EndTable();
-    std::cout << t.table_name << ": success\n" << std::endl;
+    std::cout << "--> success" << std::endl;
     // std::cout << query << std::endl << std::endl;
   }
 }
