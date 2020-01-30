@@ -32,7 +32,7 @@ echo "$conf"  >  "$tmp/file-list-python-plugin"
 start_test
 
 #enable only mysql
-cp "${conf}"/bareos-dir.d/catalog/postgresql.conf "${conf}"/bareos-dir.d/catalog/postgresql.conf.disabled
+mv "${conf}"/bareos-dir.d/catalog/postgresql.conf "${conf}"/bareos-dir.d/catalog/postgresql.conf.disabled
 
 cat <<END_OF_DATA >$tmp/bconcmds
 @$out /dev/null
@@ -55,14 +55,13 @@ run_bareos
 stop_bareos
 
 #enable mysql and postgresql
-cp "${conf}"/bareos-dir.d/catalog/postgresql.conf.disabled "${conf}"/bareos-dir.d/catalog/postgresql.conf
+mv "${conf}"/bareos-dir.d/catalog/postgresql.conf.disabled "${conf}"/bareos-dir.d/catalog/postgresql.conf
 
 #do the database copy
 "${sbin}"/bareos-dbcopy -d -c ${current_test_directory}/etc/bareos mysql postgresql
 
 #enable only postgresql
-cp "${conf}"/bareos-dir.d/catalog/postgresql.conf.disabled "${conf}"/bareos-dir.d/catalog/postgresql.conf
-cp "${conf}"/bareos-dir.d/catalog/mysql.conf "${conf}"/bareos-dir.d/catalog/mysql.conf.disabled
+mv "${conf}"/bareos-dir.d/catalog/mysql.conf "${conf}"/bareos-dir.d/catalog/mysql.conf.disabled
 
 cat <<END_OF_DATA >$tmp/bconcmds
 @#
