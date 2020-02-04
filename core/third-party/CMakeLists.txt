@@ -18,7 +18,7 @@
 #   02110-1301, USA.
 
 # pistache
-add_subdirectory(pistache)
+# add_subdirectory(pistache)
 
 # gtest
 set(BUILD_SHARED_LIBS yes)
