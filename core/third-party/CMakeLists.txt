@@ -22,7 +22,7 @@
 
 # gtest
 set(BUILD_SHARED_LIBS yes)
-set(INSTALL_GTEST no)
+set(INSTALL_GTEST OFF CACHE BOOL "do not install gtest")
 
 add_subdirectory(googletest)
 set (GTEST_MAIN_LIBRARIES gtest_main PARENT_SCOPE)
