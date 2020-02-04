@@ -1,6 +1,6 @@
 #   BAREOS® - Backup Archiving REcovery Open Sourced
 #
-#   Copyright (C) 2019-2019 Bareos GmbH & Co. KG
+#   Copyright (C) 2019-2020 Bareos GmbH & Co. KG
 #
 #   This program is Free Software; you can redistribute it and/or
 #   modify it under the terms of version three of the GNU Affero General Public
@@ -65,9 +65,17 @@ else()
 endif()
 
 if(BUILD_BAREOS_BINARIES)
+  set(BUILD_SHARED_LIBS yes)
+  add_subdirectory(third-party/googletest)
+  set (GTEST_MAIN_LIBRARIES gtest_main)
+  set (GTEST_LIBRARIES gtest)
+  set (GTEST_MAIN_FOUND TRUE)
+  set (GTEST_FOUND TRUE)
+
   add_subdirectory(core)
   add_subdirectory(webui)
   add_subdirectory(systemtests)
+
 endif()
 
 if(docs
