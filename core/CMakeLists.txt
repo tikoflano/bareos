@@ -414,7 +414,7 @@ include_directories(SYSTEM ${PYTHON_INCLUDE_PATH})
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
-include_directories(${PROJECT_SOURCE_DIR}/../third-party/)
+include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/../third-party/)
 
 # trick for socklen_t
 set(CMAKE_EXTRA_INCLUDE_FILES "sys/socket.h")
