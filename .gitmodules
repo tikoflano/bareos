@@ -1,9 +1,9 @@
 [submodule "third-party/googletest"]
-	path = third-party/googletest
+	path = core/third-party/googletest
 	url = https://github.com/google/googletest
 [submodule "third-party/lmdb"]
-	path = third-party/lmdb
+	path = core/third-party/lmdb
 	url = https://github.com/LMDB/lmdb
 [submodule "third-party/pistache"]
-	path = third-party/pistache
+	path = core/third-party/pistache
 	url = https://github.com/oktal/pistache
