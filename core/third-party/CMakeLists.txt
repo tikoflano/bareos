@@ -22,6 +22,8 @@
 
 # gtest
 set(BUILD_SHARED_LIBS yes)
+set(INSTALL_GTEST no)
+
 add_subdirectory(googletest)
 set (GTEST_MAIN_LIBRARIES gtest_main PARENT_SCOPE)
 set (GTEST_LIBRARIES gtest PARENT_SCOPE)
