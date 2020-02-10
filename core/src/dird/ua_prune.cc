@@ -3,7 +3,7 @@
 
    Copyright (C) 2002-2009 Free Software Foundation Europe e.V.
    Copyright (C) 2011-2016 Planets Communications B.V.
-   Copyright (C) 2013-2019 Bareos GmbH & Co. KG
+   Copyright (C) 2013-2020 Bareos GmbH & Co. KG
 
    This program is Free Software; you can redistribute it and/or
    modify it under the terms of version three of the GNU Affero General Public
@@ -840,7 +840,7 @@ bool PruneVolume(UaContext* ua, MediaDbRecord* mr)
   PoolMem query(PM_MESSAGE);
   del_ctx del;
   bool ok = false;
-  int count;
+  int NumJobsToBePruned;
 
   if (mr->Enabled == VOL_ARCHIVED) {
     return false; /* Cannot prune archived volumes */
@@ -855,9 +855,18 @@ bool PruneVolume(UaContext* ua, MediaDbRecord* mr)
   if (bstrcmp(mr->VolStatus, "Full") || bstrcmp(mr->VolStatus, "Used")) {
     Dmsg2(050, "get prune list MediaId=%d Volume %s\n", (int)mr->MediaId,
           mr->VolumeName);
-    count = GetPruneListForVolume(ua, mr, &del);
-    Dmsg1(050, "Num pruned = %d\n", count);
-    if (count != 0) { PurgeJobListFromCatalog(ua, del); }
+
+
+    NumJobsToBePruned = GetPruneListForVolume(ua, mr, &del);
+    Jmsg(ua->jcr, M_INFO, 0,
+         _("Pruning volume %s: %d Jobs have expired and can be pruned.\n"),
+         mr->VolumeName, NumJobsToBePruned);
+    Dmsg1(050, "Num pruned = %d\n", NumJobsToBePruned);
+    if (NumJobsToBePruned != 0) {
+      /* TODO: print jobid list like this: */
+      // _("Pruning volume %s: Purging jobs: %s .\n");
+      PurgeJobListFromCatalog(ua, del);
+    }
     ok = IsVolumePurged(ua, mr);
   }
 
@@ -872,7 +881,7 @@ bool PruneVolume(UaContext* ua, MediaDbRecord* mr)
 int GetPruneListForVolume(UaContext* ua, MediaDbRecord* mr, del_ctx* del)
 {
   PoolMem query(PM_MESSAGE);
-  int count = 0;
+  int NumJobsToBePruned = 0;
   utime_t now, period;
   char ed1[50], ed2[50];
 
@@ -897,10 +906,10 @@ int GetPruneListForVolume(UaContext* ua, MediaDbRecord* mr, del_ctx* del)
     Dmsg0(050, "Count failed\n");
     goto bail_out;
   }
-  count = ExcludeRunningJobsFromList(del);
+  NumJobsToBePruned = ExcludeRunningJobsFromList(del);
 
 bail_out:
-  return count;
+  return NumJobsToBePruned;
 }
 
 /**
