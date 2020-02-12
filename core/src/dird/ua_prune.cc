@@ -67,7 +67,7 @@ int DelCountHandler(void* ctx, int num_fields, char** row)
 /**
  * Called here to make in memory list of JobIds to be
  *  deleted and the associated PurgedFiles flag.
- *  The in memory list will then be transversed
+ *  The in memory list will then be traversed
  *  to issue the SQL DELETE commands.  Note, the list
  *  is allowed to get to MAX_DEL_LIST_LEN to limit the
  *  maximum malloc'ed memory.
