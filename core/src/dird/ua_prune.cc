@@ -882,7 +882,7 @@ int GetPruneListForVolume(UaContext* ua, MediaDbRecord* mr, del_ctx* del)
 {
   PoolMem query(PM_MESSAGE);
   int NumJobsToBePruned = 0;
-  utime_t now, period;
+  utime_t now, VolRetention;
   char ed1[50], ed2[50];
 
   if (mr->Enabled == VOL_ARCHIVED) {
@@ -892,20 +892,24 @@ int GetPruneListForVolume(UaContext* ua, MediaDbRecord* mr, del_ctx* del)
   /*
    * Now add to the  list of JobIds for Jobs written to this Volume
    */
-  period = mr->VolRetention;
+  VolRetention = mr->VolRetention;
   now = (utime_t)time(NULL);
   ua->db->FillQuery(query, BareosDb::SQL_QUERY::sel_JobMedia,
                     edit_int64(mr->MediaId, ed1),
-                    edit_int64(now - period, ed2));
+                    edit_int64(now - VolRetention, ed2));
 
-  Dmsg3(250, "Now=%d period=%d now-period=%s\n", (int)now, (int)period, ed2);
+  Dmsg3(250, "Now=%d VolRetention=%d now-VolRetention=%s\n", (int)now,
+        (int)VolRetention, ed2);
   Dmsg1(050, "Query=%s\n", query.c_str());
+
 
   if (!ua->db->SqlQuery(query.c_str(), FileDeleteHandler, (void*)del)) {
     if (ua->verbose) { ua->ErrorMsg("%s", ua->db->strerror()); }
     Dmsg0(050, "Count failed\n");
     goto bail_out;
   }
+  Jmsg(ua->jcr, M_INFO, 0, _("Volume %s has Volume Retention of %d .\n"),
+       mr->VolumeName, VolRetention);
   NumJobsToBePruned = ExcludeRunningJobsFromList(del);
 
 bail_out:
