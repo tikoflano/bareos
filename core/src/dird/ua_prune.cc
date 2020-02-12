@@ -908,9 +908,12 @@ int GetPruneListForVolume(UaContext* ua, MediaDbRecord* mr, del_ctx* del)
     Dmsg0(050, "Count failed\n");
     goto bail_out;
   }
-  Jmsg(ua->jcr, M_INFO, 0, _("Volume %s has Volume Retention of %d .\n"),
-       mr->VolumeName, VolRetention);
   NumJobsToBePruned = ExcludeRunningJobsFromList(del);
+
+  Jmsg(ua->jcr, M_INFO, 0,
+       _("Volume %s has Volume Retention of %d sec. and has %d jobs that will "
+         "be pruned\n"),
+       mr->VolumeName, VolRetention, NumJobsToBePruned);
 
 bail_out:
   return NumJobsToBePruned;

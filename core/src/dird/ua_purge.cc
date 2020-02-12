@@ -374,8 +374,8 @@ void PurgeJobListFromCatalog(UaContext* ua, del_ctx& del)
       del.num_del++;
     }
     Dmsg1(150, "num_ids=%d\n", del.num_ids);
-    Jmsg(ua->jcr, M_INFO, 0, _("Purging the following %d JobIds: %s\n"),
-         del.num_ids, jobids.c_str());
+    Jmsg(ua->jcr, M_INFO, 0, _("Purging the following JobIds: %s\n"),
+         jobids.c_str());
     PurgeJobsFromCatalog(ua, jobids.c_str());
   }
 }
