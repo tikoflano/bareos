@@ -1,6 +1,6 @@
 #   BAREOS® - Backup Archiving REcovery Open Sourced
 #
-#   Copyright (C) 2017-2019 Bareos GmbH & Co. KG
+#   Copyright (C) 2017-2020 Bareos GmbH & Co. KG
 #
 #   This program is Free Software; you can redistribute it and/or
 #   modify it under the terms of version three of the GNU Affero General Public
@@ -26,11 +26,11 @@ if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   # make sure we get python 2 not 3
   set(
     Python_ADDITIONAL_VERSIONS
-    2.5
-    2.6
-    2.7
-    2.8
-    2.9
+    3.5
+    3.6
+    3.7
+    3.8
+    3.9
   )
   find_package(PythonInterp)
   include(FindPythonLibs)
