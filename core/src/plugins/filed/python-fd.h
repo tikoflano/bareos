@@ -2,7 +2,7 @@
    BAREOS® - Backup Archiving REcovery Open Sourced
 
    Copyright (C) 2013-2014 Planets Communications B.V.
-   Copyright (C) 2013-2016 Bareos GmbH & Co. KG
+   Copyright (C) 2013-2020 Bareos GmbH & Co. KG
 
    This program is Free Software; you can modify it under the terms of
    version three of the GNU Affero General Public License as published by the
@@ -741,5 +741,72 @@ static PyMethodDef BareosFDMethods[] = {
      "Clear bit in the Accurate Seen bitmap"},
     {NULL, NULL, 0, NULL}};
 
+
+static struct PyModuleDef BareosFdModuleDef = {
+    PyModuleDef_HEAD_INIT,
+    "bareosfd",      /* m_name */
+    NULL,            /* m_doc */
+    -1,              /* m_size */
+    BareosFDMethods, /* m_methods */
+    NULL,            /* m_reload */
+    NULL,            /* m_traverse */
+    NULL,            /* m_clear */
+    NULL,            /* m_free */
+};
+
+
+static PyObject* PyInit_bareosfd(void)
+{
+  PyObject* BareosFdModule = PyModule_Create(&BareosFdModuleDef);
+
+  PyRestoreObjectType.tp_new = PyType_GenericNew;
+  if (PyType_Ready(&PyRestoreObjectType) < 0) { return NULL; }
+
+  PyStatPacketType.tp_new = PyType_GenericNew;
+  if (PyType_Ready(&PyStatPacketType) < 0) { return NULL; }
+
+  PySavePacketType.tp_new = PyType_GenericNew;
+  if (PyType_Ready(&PySavePacketType) < 0) { return NULL; }
+
+  PyRestorePacketType.tp_new = PyType_GenericNew;
+  if (PyType_Ready(&PyRestorePacketType) < 0) { return NULL; }
+
+  PyIoPacketType.tp_new = PyType_GenericNew;
+  if (PyType_Ready(&PyIoPacketType) < 0) { return NULL; }
+
+  PyAclPacketType.tp_new = PyType_GenericNew;
+  if (PyType_Ready(&PyAclPacketType) < 0) { return NULL; }
+
+  PyXattrPacketType.tp_new = PyType_GenericNew;
+  if (PyType_Ready(&PyXattrPacketType) < 0) { return NULL; }
+
+  Py_INCREF(&PyRestoreObjectType);
+  PyModule_AddObject(BareosFdModule, "RestoreObject",
+                     (PyObject*)&PyRestoreObjectType);
+
+  Py_INCREF(&PyStatPacketType);
+  PyModule_AddObject(BareosFdModule, "StatPacket",
+                     (PyObject*)&PyStatPacketType);
+
+  Py_INCREF(&PySavePacketType);
+  PyModule_AddObject(BareosFdModule, "SavePacket",
+                     (PyObject*)&PySavePacketType);
+
+  Py_INCREF(&PyRestorePacketType);
+  PyModule_AddObject(BareosFdModule, "RestorePacket",
+                     (PyObject*)&PyRestorePacketType);
+
+  Py_INCREF(&PyIoPacketType);
+  PyModule_AddObject(BareosFdModule, "IoPacket", (PyObject*)&PyIoPacketType);
+
+  Py_INCREF(&PyAclPacketType);
+  PyModule_AddObject(BareosFdModule, "AclPacket", (PyObject*)&PyAclPacketType);
+
+  Py_INCREF(&PyXattrPacketType);
+  PyModule_AddObject(BareosFdModule, "XattrPacket",
+                     (PyObject*)&PyXattrPacketType);
+
+  return BareosFdModule;
+}
 } /* namespace filedaemon */
 #endif /* BAREOS_PLUGINS_FILED_PYTHON_FD_H_ */

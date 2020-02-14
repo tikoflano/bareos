@@ -172,9 +172,8 @@ bRC loadPlugin(bInfo* lbinfo,
   *pinfo = &pluginInfo;   /* Return pointer to our info */
   *pfuncs = &pluginFuncs; /* Return pointer to our functions */
 
-  /*
-   * Setup Python
-   */
+  /* Setup Python */
+  PyImport_AppendInittab("bareosfd", &PyInit_bareosfd);
   Py_InitializeEx(0);
   PyEval_InitThreads();
   mainThreadState = PyEval_SaveThread();
@@ -1147,109 +1146,7 @@ static bRC PyLoadModule(bpContext* ctx, void* value)
   /*
    * See if we already setup the module structure.
    */
-  if (!p_ctx->pInstance) {
-    /*
-     * Make our callback methods available for Python.
-     */
-    // p_ctx->pInstance = Py_InitModule("bareosfd", BareosFDMethods);
-    static struct PyModuleDef moduledef = {
-        PyModuleDef_HEAD_INIT,
-        "bareosfd",      /* m_name */
-        NULL,            /* m_doc */
-        -1,              /* m_size */
-        BareosFDMethods, /* m_methods */
-        NULL,            /* m_reload */
-        NULL,            /* m_traverse */
-        NULL,            /* m_clear */
-        NULL,            /* m_free */
-    };
-    // p_ctx->pInstance = PyModuleDef_Init(&moduledef);
-    p_ctx->pInstance = PyModule_Create(&moduledef);
-
-    // if (!p_ctx->pInstance) { goto cleanup; }
-
-    /*
-     * Fill in the slots of PyRestoreObject
-     */
-    PyRestoreObjectType.tp_new = PyType_GenericNew;
-    if (PyType_Ready(&PyRestoreObjectType) < 0) { goto cleanup; }
-
-    /*
-     * Fill in the slots of PyStatPacket
-     */
-    PyStatPacketType.tp_new = PyType_GenericNew;
-    if (PyType_Ready(&PyStatPacketType) < 0) { goto cleanup; }
-
-    /*
-     * Fill in the slots of PySavePacket
-     */
-    PySavePacketType.tp_new = PyType_GenericNew;
-    if (PyType_Ready(&PySavePacketType) < 0) { goto cleanup; }
-
-    /*
-     * Fill in the slots of PyRestorePacket
-     */
-    PyRestorePacketType.tp_new = PyType_GenericNew;
-    if (PyType_Ready(&PyRestorePacketType) < 0) { goto cleanup; }
-
-    /*
-     * Fill in the slots of PyIoPacketType
-     */
-    PyIoPacketType.tp_new = PyType_GenericNew;
-    if (PyType_Ready(&PyIoPacketType) < 0) { goto cleanup; }
-
-    /*
-     * Fill in the slots of PyAclPacketType
-     */
-    PyAclPacketType.tp_new = PyType_GenericNew;
-    if (PyType_Ready(&PyAclPacketType) < 0) { goto cleanup; }
-
-    /*
-     * Fill in the slots of PyXattrPacketType
-     */
-    PyXattrPacketType.tp_new = PyType_GenericNew;
-    if (PyType_Ready(&PyXattrPacketType) < 0) { goto cleanup; }
-
-    /*
-     * Add the types to the module
-     */
-    Py_INCREF(&PyRestoreObjectType);
-    PyModule_AddObject(p_ctx->pInstance, "RestoreObject",
-                       (PyObject*)&PyRestoreObjectType);
-
-    Py_INCREF(&PyStatPacketType);
-    PyModule_AddObject(p_ctx->pInstance, "StatPacket",
-                       (PyObject*)&PyStatPacketType);
-
-    Py_INCREF(&PySavePacketType);
-    PyModule_AddObject(p_ctx->pInstance, "SavePacket",
-                       (PyObject*)&PySavePacketType);
-
-    Py_INCREF(&PyRestorePacketType);
-    PyModule_AddObject(p_ctx->pInstance, "RestorePacket",
-                       (PyObject*)&PyRestorePacketType);
-
-    Py_INCREF(&PyIoPacketType);
-    PyModule_AddObject(p_ctx->pInstance, "IoPacket",
-                       (PyObject*)&PyIoPacketType);
-
-    Py_INCREF(&PyAclPacketType);
-    PyModule_AddObject(p_ctx->pInstance, "AclPacket",
-                       (PyObject*)&PyAclPacketType);
-
-    Py_INCREF(&PyXattrPacketType);
-    PyModule_AddObject(p_ctx->pInstance, "XattrPacket",
-                       (PyObject*)&PyXattrPacketType);
-
-    PyState_AddModule(p_ctx->pInstance, &moduledef);
-    PyObject* module_found = PyState_FindModule(&moduledef);
-    // PyImport_ImportModule("bareosfd");
-    if (module_found) {
-      Dmsg(ctx, 0, "python-fd: module bareosfd was found\n");
-    } else {
-      Dmsg(ctx, 0, "python-fd: module bareosfd was NOT found\n");
-    }
-  }
+  if (!p_ctx->pInstance) {}
   /*
    * Try to load the Python module by name.
    */
@@ -1315,14 +1212,13 @@ static bRC PyLoadModule(bpContext* ctx, void* value)
 
   return retval;
 
-cleanup:
   p_ctx->pInstance = NULL;
 
 bail_out:
   if (PyErr_Occurred()) { PyErrorHandler(ctx, M_FATAL); }
 
   return retval;
-}
+}  // namespace filedaemon
 
 /**
  * Any plugin options which are passed in are dispatched here to a Python method
