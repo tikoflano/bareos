@@ -220,7 +220,7 @@ static bRC newPlugin(bpContext* ctx)
   /*
    * For each plugin instance we instantiate a new Python interpreter.
    */
-  PyEval_AcquireLock();
+  PyEval_AcquireThread(mainThreadState);
   p_ctx->interpreter = Py_NewInterpreter();
   PyEval_ReleaseThread(p_ctx->interpreter);
 
@@ -1092,7 +1092,9 @@ static void PyErrorHandler(bpContext* ctx, int msgtype)
     strRetval =
         PyObject_CallMethod(emptyString, (char*)"join", (char*)"O", tbList);
 
-    error_string = strdup(PyBytes_AsString(strRetval));
+    Py_ssize_t size;
+    error_string = strdup(PyUnicode_AsUTF8AndSize(strRetval, &size));
+
 
     Py_DECREF(tbList);
     Py_DECREF(emptyString);
