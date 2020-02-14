@@ -222,6 +222,7 @@ static bRC newPlugin(bpContext* ctx)
    */
   PyEval_AcquireThread(mainThreadState);
   p_ctx->interpreter = Py_NewInterpreter();
+  // PyEval_ReleaseThread(mainThreadState);
   PyEval_ReleaseThread(p_ctx->interpreter);
 
   /*
@@ -1117,7 +1118,7 @@ static void PyErrorHandler(bpContext* ctx, int msgtype)
 /**
  * Initial load of the Python module.
  *
- * Based on the parsed plugin options we set some prerequisits like the
+ * Based on the parsed plugin options we set some prerequisites like the
  * module path and the module to load. We also load the dictionary used
  * for looking up the Python methods.
  */
@@ -1155,14 +1156,16 @@ static bRC PyLoadModule(bpContext* ctx, void* value)
         PyModuleDef_HEAD_INIT,
         "bareosfd",      /* m_name */
         NULL,            /* m_doc */
-        NULL,            /* m_size */
+        0,               /* m_size */
         BareosFDMethods, /* m_methods */
         NULL,            /* m_reload */
         NULL,            /* m_traverse */
         NULL,            /* m_clear */
         NULL,            /* m_free */
     };
+    // p_ctx->pInstance = PyModuleDef_Init(&moduledef);
     p_ctx->pInstance = PyModule_Create(&moduledef);
+    if (!p_ctx->pInstance) { goto cleanup; }
 
     /*
      * Fill in the slots of PyRestoreObject
