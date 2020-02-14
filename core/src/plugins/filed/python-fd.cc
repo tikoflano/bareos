@@ -1156,7 +1156,7 @@ static bRC PyLoadModule(bpContext* ctx, void* value)
         PyModuleDef_HEAD_INIT,
         "bareosfd",      /* m_name */
         NULL,            /* m_doc */
-        0,               /* m_size */
+        -1,              /* m_size */
         BareosFDMethods, /* m_methods */
         NULL,            /* m_reload */
         NULL,            /* m_traverse */
@@ -1165,7 +1165,7 @@ static bRC PyLoadModule(bpContext* ctx, void* value)
     };
     // p_ctx->pInstance = PyModuleDef_Init(&moduledef);
     p_ctx->pInstance = PyModule_Create(&moduledef);
-    if (!p_ctx->pInstance) { goto cleanup; }
+    // if (!p_ctx->pInstance) { goto cleanup; }
 
     /*
      * Fill in the slots of PyRestoreObject
@@ -1241,6 +1241,7 @@ static bRC PyLoadModule(bpContext* ctx, void* value)
                        (PyObject*)&PyXattrPacketType);
   }
 
+  PyImport_ImportModule("bareosfd");
   /*
    * Try to load the Python module by name.
    */
