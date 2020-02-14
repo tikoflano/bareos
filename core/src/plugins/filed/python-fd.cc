@@ -1165,6 +1165,7 @@ static bRC PyLoadModule(bpContext* ctx, void* value)
     };
     // p_ctx->pInstance = PyModuleDef_Init(&moduledef);
     p_ctx->pInstance = PyModule_Create(&moduledef);
+
     // if (!p_ctx->pInstance) { goto cleanup; }
 
     /*
@@ -1239,9 +1240,16 @@ static bRC PyLoadModule(bpContext* ctx, void* value)
     Py_INCREF(&PyXattrPacketType);
     PyModule_AddObject(p_ctx->pInstance, "XattrPacket",
                        (PyObject*)&PyXattrPacketType);
-  }
 
-  PyImport_ImportModule("bareosfd");
+    PyState_AddModule(p_ctx->pInstance, &moduledef);
+    PyObject* module_found = PyState_FindModule(&moduledef);
+    // PyImport_ImportModule("bareosfd");
+    if (module_found) {
+      Dmsg(ctx, 0, "python-fd: module bareosfd was found\n");
+    } else {
+      Dmsg(ctx, 0, "python-fd: module bareosfd was NOT found\n");
+    }
+  }
   /*
    * Try to load the Python module by name.
    */
