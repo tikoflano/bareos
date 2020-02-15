@@ -141,9 +141,8 @@ bRC loadPlugin(bsdInfo* lbinfo,
   *pinfo = &pluginInfo;   /* Return pointer to our info */
   *pfuncs = &pluginFuncs; /* Return pointer to our functions */
 
-  /*
-   * Setup Python
-   */
+  /* Setup Python */
+  PyImport_AppendInittab("bareossd", &PyInit_bareossd);
   Py_InitializeEx(0);
   PyEval_InitThreads();
   mainThreadState = PyEval_SaveThread();
@@ -189,7 +188,7 @@ static bRC newPlugin(bpContext* ctx)
   /*
    * For each plugin instance we instantiate a new Python interpreter.
    */
-  PyEval_AcquireLock();
+  PyEval_AcquireThread(mainThreadState);
   p_ctx->interpreter = Py_NewInterpreter();
   PyEval_ReleaseThread(p_ctx->interpreter);
 
@@ -674,24 +673,24 @@ static bRC PyLoadModule(bpContext* ctx, void* value)
   /*
    * See if we already setup the module structure.
    */
-  if (!p_ctx->pInstance) {
-    /*
-     * Make our callback methods available for Python.
-     */
-    // p_ctx->pInstance = Py_InitModule("bareossd", BareosSDMethods);
-    static struct PyModuleDef moduledef = {
-        PyModuleDef_HEAD_INIT,
-        "bareossd",      /* m_name */
-        NULL,            /* m_doc */
-        NULL,            /* m_size */
-        BareosSDMethods, /* m_methods */
-        NULL,            /* m_reload */
-        NULL,            /* m_traverse */
-        NULL,            /* m_clear */
-        NULL,            /* m_free */
-    };
-    p_ctx->pInstance = PyModule_Create(&moduledef);
-  }
+  /* if (!p_ctx->pInstance) { */
+  /*
+   * Make our callback methods available for Python.
+   */
+  // p_ctx->pInstance = Py_InitModule("bareossd", BareosSDMethods);
+  /* static struct PyModuleDef moduledef = { */
+  /*     PyModuleDef_HEAD_INIT, */
+  /*     "bareossd",      /1* m_name *1/ */
+  /*     NULL,            /1* m_doc *1/ */
+  /*     NULL,            /1* m_size *1/ */
+  /*     BareosSDMethods, /1* m_methods *1/ */
+  /*     NULL,            /1* m_reload *1/ */
+  /*     NULL,            /1* m_traverse *1/ */
+  /*     NULL,            /1* m_clear *1/ */
+  /*     NULL,            /1* m_free *1/ */
+  /* }; */
+  /* p_ctx->pInstance = PyModule_Create(&moduledef); */
+  /* } */
 
   /*
    * Try to load the Python module by name.
