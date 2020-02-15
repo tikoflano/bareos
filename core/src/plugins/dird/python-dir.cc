@@ -184,7 +184,7 @@ static bRC newPlugin(bpContext* ctx)
   /*
    * For each plugin instance we instantiate a new Python interpreter.
    */
-  PyEval_AcquireLock();
+  PyEval_AcquireThread(mainThreadState);
   p_ctx->interpreter = Py_NewInterpreter();
   PyEval_ReleaseThread(p_ctx->interpreter);
 

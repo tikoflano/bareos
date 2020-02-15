@@ -90,6 +90,7 @@ static struct PyModuleDef BareosDirModuleDef = {
 static PyObject* PyInit_bareosdir(void)
 {
   PyObject* BareosDirModule = PyModule_Create(&BareosDirModuleDef);
+  return BareosDirModule;
 }
 
 

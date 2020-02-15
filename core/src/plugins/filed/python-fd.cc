@@ -221,7 +221,6 @@ static bRC newPlugin(bpContext* ctx)
    */
   PyEval_AcquireThread(mainThreadState);
   p_ctx->interpreter = Py_NewInterpreter();
-  // PyEval_ReleaseThread(mainThreadState);
   PyEval_ReleaseThread(p_ctx->interpreter);
 
   /*
