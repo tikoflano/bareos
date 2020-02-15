@@ -37,7 +37,7 @@ if(HAVE_WIN32)
   )
   add_definitions(-DMS_WIN${WINDOWS_BITS})
 else()
-  include_directories(/usr/include/python2.7)
+  include_directories(/usr/include/python3.7)
 endif()
 
 include_directories(${OPENSSL_INCLUDE_DIR})
