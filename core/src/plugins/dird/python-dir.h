@@ -2,7 +2,7 @@
    BAREOS® - Backup Archiving REcovery Open Sourced
 
    Copyright (C) 2013-2014 Planets Communications B.V.
-   Copyright (C) 2013-2016 Bareos GmbH & Co. KG
+   Copyright (C) 2013-2020 Bareos GmbH & Co. KG
 
    This program is Free Software; you can modify it under the terms of
    version three of the GNU Affero General Public License as published by the
@@ -74,6 +74,24 @@ static PyMethodDef BareosDIRMethods[] = {
     {"GetInstanceCount", PyBareosGetInstanceCount, METH_VARARGS,
      "Get number of instances of current plugin"},
     {NULL, NULL, 0, NULL}};
+
+static struct PyModuleDef BareosDirModuleDef = {
+    PyModuleDef_HEAD_INIT,
+    "bareosdir",      /* m_name */
+    NULL,             /* m_doc */
+    NULL,             /* m_size */
+    BareosDIRMethods, /* m_methods */
+    NULL,             /* m_reload */
+    NULL,             /* m_traverse */
+    NULL,             /* m_clear */
+    NULL,             /* m_free */
+};
+
+static PyObject* PyInit_bareosdir(void)
+{
+  PyObject* BareosDirModule = PyModule_Create(&BareosDirModuleDef);
+}
+
 
 } /* namespace directordaemon */
 #endif /* BAREOS_PLUGINS_DIRD_PYTHON_DIR_H_ */

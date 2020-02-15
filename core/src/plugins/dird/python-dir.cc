@@ -146,6 +146,7 @@ bRC loadPlugin(bDirInfo* lbinfo,
   /*
    * Setup Python
    */
+  PyImport_AppendInittab("bareosdir", &PyInit_bareosdir);
   Py_InitializeEx(0);
   PyEval_InitThreads();
   mainThreadState = PyEval_SaveThread();
@@ -656,24 +657,12 @@ static bRC PyLoadModule(bpContext* ctx, void* value)
   /*
    * See if we already setup the module structure.
    */
-  if (!p_ctx->pInstance) {
-    /*
-     * Make our callback methods available for Python.
-     */
-    // p_ctx->pInstance = Py_InitModule("bareosdir", BareosDIRMethods);
-    static struct PyModuleDef moduledef = {
-        PyModuleDef_HEAD_INIT,
-        "bareosdir",      /* m_name */
-        NULL,             /* m_doc */
-        NULL,             /* m_size */
-        BareosDIRMethods, /* m_methods */
-        NULL,             /* m_reload */
-        NULL,             /* m_traverse */
-        NULL,             /* m_clear */
-        NULL,             /* m_free */
-    };
-    p_ctx->pInstance = PyModule_Create(&moduledef);
-  }
+  /* if (!p_ctx->pInstance) { */
+  /*
+   * Make our callback methods available for Python.
+   */
+  // p_ctx->pInstance = Py_InitModule("bareosdir", BareosDIRMethods);
+  /* } */
 
   /*
    * Try to load the Python module by name.
