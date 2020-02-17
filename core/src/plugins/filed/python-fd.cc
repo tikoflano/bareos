@@ -1081,7 +1081,9 @@ static void PyErrorHandler(bpContext* ctx, int msgtype)
   char* error_string;
 
   PyErr_Fetch(&type, &value, &traceback);
-
+#if PY_MAJOR_VERSION >= 3
+  PyErr_NormalizeException(&type, &value, &traceback);
+#endif
   tracebackModule = PyImport_ImportModule("traceback");
   if (tracebackModule != NULL) {
     PyObject *tbList, *emptyString, *strRetval;
@@ -1095,7 +1097,12 @@ static void PyErrorHandler(bpContext* ctx, int msgtype)
     strRetval =
         PyObject_CallMethod(emptyString, (char*)"join", (char*)"O", tbList);
 
+#if PY_MAJOR_VERSION >= 3
+    Py_ssize_t size;
+    error_string = strdup(PyUnicode_AsUTF8AndSize(strRetval, &size));
+#else
     error_string = strdup(PyString_AsString(strRetval));
+#endif
 
     Py_DECREF(tbList);
     Py_DECREF(emptyString);
