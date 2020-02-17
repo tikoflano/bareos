@@ -100,5 +100,13 @@ MOD_INIT(bareosdir)
   return MOD_SUCCESS_VAL(BareosDirModule);
 }
 
+
+#if PY_MAJOR_VERSION >= 3
+#define PyInt_AsLong PyLong_AsLong
+#define PyInt_FromLong PyLong_FromLong
+#define PyString_FromString PyUnicode_FromString
+#define PyString_AsString PyBytes_AsString
+#endif
+
 } /* namespace directordaemon */
 #endif /* BAREOS_PLUGINS_DIRD_PYTHON_DIR_H_ */

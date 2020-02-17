@@ -814,5 +814,14 @@ MOD_INIT(bareosfd)
 
   return MOD_SUCCESS_VAL(BareosFdModule);
 }
+
+#if PY_MAJOR_VERSION >= 3
+#define PyInt_AsLong PyLong_AsLong
+#define PyInt_FromLong PyLong_FromLong
+#define PyString_FromString PyUnicode_FromString
+#define PyString_AsString PyBytes_AsString
+#define PyString_Check PyUnicode_Check
+#endif
+
 } /* namespace filedaemon */
 #endif /* BAREOS_PLUGINS_FILED_PYTHON_FD_H_ */

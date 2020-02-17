@@ -98,4 +98,11 @@ MOD_INIT(bareossd)
   return MOD_SUCCESS_VAL(BareosSdModule);
 }
 
+#if PY_MAJOR_VERSION >= 3
+#define PyInt_AsLong PyLong_AsLong
+#define PyInt_FromLong PyLong_FromLong
+#define PyString_FromString PyUnicode_FromString
+#define PyString_AsString PyBytes_AsString
+#endif
+
 #endif /* BAREOS_PLUGINS_STORED_PYTHON_SD_H_ */
