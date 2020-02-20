@@ -36,8 +36,6 @@ if(HAVE_WIN32)
     ${PROJECT_SOURCE_DIR}/src/win32/plugins/python/lib/${WINDOWS_BITS}
   )
   add_definitions(-DMS_WIN${WINDOWS_BITS})
-else()
-  include_directories(/usr/include/python2.7)
 endif()
 
 include_directories(${OPENSSL_INCLUDE_DIR})
