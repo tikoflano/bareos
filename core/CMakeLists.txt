@@ -410,8 +410,6 @@ include(acltypes)
 
 include_directories(SYSTEM ${PYTHON_INCLUDE_DIRS})
 
-include_directories(SYSTEM ${PYTHON_INCLUDE_PATH})
-
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
 # trick for socklen_t
@@ -879,7 +877,7 @@ message(
 )
 message("   ELASTO support:               ${have_elasto} ")
 message(
-  "   Python support:               ${PYTHONLIBS_FOUND} ${PYTHONLIBS_VERSION_STRING} ${PYTHON_INCLUDE_PATH}"
+  "   Python support:               ${PYTHON_FOUND} ${PYTHON_VERSION} ${PYTHON_INCLUDE_DIRS} ${PYTHON_LIBRARIES}"
 )
 message("   systemd support:              ${WITH_SYSTEMD} ${SYSTEMD_UNITDIR}")
 message("   Batch insert enabled:         ${USE_BATCH_FILE_INSERT}")

@@ -1,6 +1,6 @@
 #   BAREOS® - Backup Archiving REcovery Open Sourced
 #
-#   Copyright (C) 2017-2019 Bareos GmbH & Co. KG
+#   Copyright (C) 2017-2020 Bareos GmbH & Co. KG
 #
 #   This program is Free Software; you can redistribute it and/or
 #   modify it under the terms of version three of the GNU Affero General Public
@@ -23,19 +23,22 @@ if(${SYSTEMD_FOUND})
 endif()
 
 if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  # make sure we get python 2 not 3
-  set(
-    Python_ADDITIONAL_VERSIONS
-    2.5
-    2.6
-    2.7
-    2.8
-    2.9
-  )
-  find_package(PythonInterp)
-  include(FindPythonLibs)
 
-  if(${PYTHONLIBS_FOUND})
+  find_package (Python3 COMPONENTS Interpreter Development)
+  if (Python3_FOUND)
+    set (PYTHON_FOUND ${Python3_FOUND})
+    set (PYTHON_LIBRARIES ${Python3_LIBRARIES})
+    set (PYTHON_INCLUDE_DIRS ${Python3_INCLUDE_DIRS})
+    set (PYTHON_VERSION ${Python3_VERSION})
+  elseif (NOT Python3_FOUND)
+    find_package (Python2 COMPONENTS Interpreter Development)
+    set (PYTHON_FOUND ${Python2_FOUND})
+    set (PYTHON_LIBRARIES ${Python2_LIBRARIES})
+    set (PYTHON_INCLUDE_DIRS ${Python2_INCLUDE_DIRS})
+    set (PYTHON_VERSION ${Python2_VERSION})
+  endif()
+
+  if(Python3_FOUND OR Python2_FOUND)
     set(HAVE_PYTHON 1)
   endif()
 
