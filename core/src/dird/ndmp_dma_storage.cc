@@ -307,7 +307,8 @@ static bool NdmpRunStorageJob(JobControlRecord *jcr, StorageResource *store, str
     * Initialize the session structure.
     */
    if (ndma_session_initialize(ndmp_sess)) {
-      goto bail_out;
+      Dmsg0(200, "Could not initialize ndma session.\n");
+      return false;
    }
 
    /*
@@ -315,37 +316,43 @@ static bool NdmpRunStorageJob(JobControlRecord *jcr, StorageResource *store, str
     */
    memcpy(&ndmp_sess->control_acb->job, ndmp_job, sizeof(struct ndm_job_param));
    if (!NdmpValidateJob(jcr, &ndmp_sess->control_acb->job)) {
-      goto bail_out;
+      Dmsg0(200, "Could not validate ndma job.\n");
+      return false;
    }
 
    /*
     * Commission the session for a run.
     */
    if (ndma_session_commission(ndmp_sess)) {
-      goto bail_out;
+      Dmsg0(200, "Could not commission the ndma sessiond.\n");
+      return false;
    }
 
    /*
     * Setup the DMA.
     */
    if (ndmca_connect_control_agent(ndmp_sess)) {
-      goto bail_out;
+      Dmsg0(200, "Could not connect to control agent.\n");
+      return false;
    }
 
    ndmp_sess->conn_open = 1;
    ndmp_sess->conn_authorized = 1;
 
+   char ndm_job_type = ndmp_sess->control_acb->job.operation & 0xff;
+   Dmsg2(200, "Could not validate ndma job: %#x - %c\n",
+                ndmp_sess->control_acb->job.operation, ndm_job_type);
+
    /*
     * Let the DMA perform its magic.
     */
-   if (ndmca_control_agent(ndmp_sess) != 0) {
-      goto bail_out;
+   int err{};
+   if ((err = ndmca_control_agent(ndmp_sess)) != 0) {
+      Dmsg1(200, "Ndma control agent error: %d\n", err);
+      return false;
    }
 
    return true;
-
-bail_out:
-   return false;
 }
 
 /**
@@ -359,7 +366,10 @@ static bool GetRobotElementStatus(JobControlRecord *jcr, StorageResource *store,
     * See if this is an autochanger.
     */
    if (!store->autochanger || !store->ndmp_changer_device) {
-      return false;
+     Dmsg2(200, "Autochanger: %s - NDMP Changer device: %s\n",
+           store->autochanger ? "true" : "false",
+           store->ndmp_changer_device ? store->ndmp_changer_device : "(NULL)");
+     return false;
    }
 
    if (!NdmpBuildStorageJob(jcr,
@@ -368,6 +378,7 @@ static bool GetRobotElementStatus(JobControlRecord *jcr, StorageResource *store,
                                true, /* Setup Robot Agent */
                                NDM_JOB_OP_INIT_ELEM_STATUS,
                                &ndmp_job)) {
+      Dmsg0(200, "Could not build NDMP storage job\n");
       return false;
    }
 
@@ -377,8 +388,10 @@ static bool GetRobotElementStatus(JobControlRecord *jcr, StorageResource *store,
     * device in the form NAME[,[CNUM,]SID[,LUN]
     */
    ndmp_job.robot_target = (struct ndmscsi_target *)actuallymalloc(sizeof(struct ndmscsi_target));
-   if (ndmscsi_target_from_str(ndmp_job.robot_target, store->ndmp_changer_device) != 0) {
+   int error_number = ndmscsi_target_from_str(ndmp_job.robot_target, store->ndmp_changer_device);
+   if (error_number != 0) {
       Actuallyfree(ndmp_job.robot_target);
+      Dmsg1(200, "Could not create NDMP target name from string: %d\n", error_number);
       return false;
    }
    ndmp_job.have_robot = 1;
@@ -392,6 +405,7 @@ static bool GetRobotElementStatus(JobControlRecord *jcr, StorageResource *store,
 
    if (!NdmpRunStorageJob(jcr, store, *ndmp_sess, &ndmp_job)) {
       CleanupNdmpSession(*ndmp_sess);
+      Dmsg0(200, "NdmpRunStorageJob failed.\n");
       return false;
    }
 
@@ -643,6 +657,7 @@ bool NdmpUpdateStorageMappings(UaContext *ua, StorageResource *store)
    struct ndm_session *ndmp_sess;
 
    if (!GetRobotElementStatus(ua->jcr, store, &ndmp_sess)) {
+      Dmsg0(200, "Could not get GetRobotElementStatus.\n");
       return false;
    }
 
