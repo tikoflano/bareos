@@ -269,6 +269,8 @@ extern "C" void NdmpRobotStatusHandler(struct ndmlog *log, char *tag, int lev, c
  */
 static void CleanupNdmpSession(struct ndm_session *ndmp_sess)
 {
+   Dmsg0(200, "Start to clean up ndmp session.\n");
+
    /*
     * Destroy the session.
     */
@@ -638,6 +640,7 @@ bool NdmpUpdateStorageMappings(JobControlRecord* jcr, StorageResource *store)
    struct ndm_session *ndmp_sess;
 
    if (!GetRobotElementStatus(jcr, store, &ndmp_sess)) {
+      Dmsg0(200, "Could not get robot element status.\n");
       return false;
    }
 
@@ -679,6 +682,7 @@ slot_number_t NdmpGetNumSlots(UaContext *ua, StorageResource *store)
     * See if the mappings are already determined.
     */
       if (!NdmpUpdateStorageMappings(ua, store)) {
+         Dmsg0(200,"NdmpUpdateStorageMappings failed\n");
          return slots;
    }
 
@@ -697,6 +701,7 @@ drive_number_t NdmpGetNumDrives(UaContext *ua, StorageResource *store)
     * See if the mappings are already determined.
     */
       if (!NdmpUpdateStorageMappings(ua, store)) {
+         Dmsg0(200,"NdmpUpdateStorageMappings failed\n");
          return drives;
    }
 
