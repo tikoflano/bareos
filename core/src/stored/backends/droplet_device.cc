@@ -1028,6 +1028,7 @@ droplet_device::droplet_device()
   canned_acl_ = NULL;
   storage_class_ = NULL;
   ctx_ = NULL;
+  max_concurrent_jobs = 1;
 }
 
 #ifdef HAVE_DYNAMIC_SD_BACKENDS
