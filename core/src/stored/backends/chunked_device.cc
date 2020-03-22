@@ -1432,6 +1432,7 @@ bool chunked_device::DeviceStatus(bsdDevStatTrig *dst)
    bool pending = false;
    int inflight_chunks = 0;
    PoolMem inflights(PM_MESSAGE);
+   PoolMem jobs(PM_MESSAGE);
 
    dst->status_length = 0;
    if (CheckRemote()) {
@@ -1439,6 +1440,11 @@ bool chunked_device::DeviceStatus(bsdDevStatTrig *dst)
    } else {
       dst->status_length = PmStrcpy(dst->status, _("Backend connection is not working.\n"));
    }
+   //jobs.bsprintf("Maximum Current Jobs: %d, Reserved: %d, Writers: %d, Waiting: %d\n",
+   //   max_concurrent_jobs, num_reserved_, num_writers, num_waiting);
+   jobs.bsprintf("Maximum Current Jobs: %d, Writers: %d, Waiting: %d\n",
+      max_concurrent_jobs, num_writers, num_waiting);
+   dst->status_length = PmStrcat(dst->status, jobs.c_str());
    /*
     * See if we are using io-threads or not and the ordered CircularBuffer is created and not empty.
     */
