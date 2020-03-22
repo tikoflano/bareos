@@ -1266,6 +1266,7 @@ bool chunked_device::WaitUntilChunksWritten()
       if (!FlushChunk(false /* release */, false /* move_to_next_chunk */)) {
          dev_errno = EIO;
          retval = false;
+         return retval;
       }
    }
 
