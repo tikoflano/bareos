@@ -863,6 +863,22 @@ bool droplet_device::initialize()
       }
    }
 
+
+   Dmsg1(100, "maximum concurrent jobs: %d\n", max_concurrent_jobs);
+
+   if (max_concurrent_jobs == 0) {
+     max_concurrent_jobs = 1;
+   }
+
+   if (max_concurrent_jobs > 1) {
+      Mmsg1(errmsg, _("Failed to initialize device, as 'Maximum Concurrent Jobs' > 1 (%d).\n"), max_concurrent_jobs);
+      Dmsg1(100, "%s", errmsg);
+      Emsg0(M_FATAL, 0, errmsg);
+      goto bail_out;
+   }
+
+   Dmsg1(100, "maximum concurrent jobs: %d\n", max_concurrent_jobs);
+
    return true;
 
 bail_out:
