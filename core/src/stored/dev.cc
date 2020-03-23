@@ -246,6 +246,25 @@ static inline Device *init_dev(JobControlRecord *jcr, DeviceResource *device, bo
             device->device_name, device->dev_type);
       return NULL;
    }
+
+   if (device->dev_type == B_DROPLET_DEV) {
+      if (device->max_concurrent_jobs == 0) {
+         /*
+          * 0 is the general default. However, for this dev_type, only 1 works.
+          * So we set it to this value.
+          */
+         Jmsg1(jcr, M_WARNING, 0,
+               _("device %s is set to the default 'Maximum Concurrent Jobs' = 1.\n"),
+               device->device_name);
+         device->max_concurrent_jobs = 1;
+      } else if (device->max_concurrent_jobs >= 2) {
+         Jmsg2(jcr, M_ERROR_TERM, 0,
+               _("device %s is configured with 'Maximum Concurrent Jobs' = %d, however only 1 is supported.\n"),
+               device->device_name, device->max_concurrent_jobs);
+         return NULL;
+      }
+   }
+
    dev->ClearSlot();         /* unknown */
 
    /*
