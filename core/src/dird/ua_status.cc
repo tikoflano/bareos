@@ -613,7 +613,7 @@ static void DoSchedulerStatus(UaContext* ua)
   foreach_res (sched, R_SCHEDULE) {
     int cnt = 0;
 
-    if (!schedulegiven && !sched->enabled) { continue; }
+    if (!sched->enabled) { continue; }
 
     if (!ua->AclAccessOk(Schedule_ACL, sched->resource_name_)) { continue; }
 
@@ -625,7 +625,12 @@ static void DoSchedulerStatus(UaContext* ua)
       if (job->schedule &&
           bstrcmp(sched->resource_name_, job->schedule->resource_name_)) {
         if (cnt++ == 0) { ua->SendMsg("%s\n", sched->resource_name_); }
-        ua->SendMsg("                       %s\n", job->resource_name_);
+        if (job->enabled && (!job->client || job->client->enabled)) {
+          ua->SendMsg("                       %s\n", job->resource_name_);
+        } else {
+          ua->SendMsg("                       %s (disabled)\n",
+            job->resource_name_);
+        }
       }
     } else {
       foreach_res (job, R_JOB) {
@@ -669,7 +674,8 @@ start_again:
        * List specific schedule.
        */
       if (job) {
-        if (job->schedule) {
+        if (job->schedule && job->schedule->enabled && job->enabled &&
+            job->client->enabled) {
           if (!show_scheduled_preview(ua, job->schedule, overview,
                                       &max_date_len, time_to_check)) {
             goto start_again;
@@ -680,7 +686,8 @@ start_again:
         foreach_res (job, R_JOB) {
           if (!ua->AclAccessOk(Job_ACL, job->resource_name_)) { continue; }
 
-          if (job->schedule && job->client == client) {
+          if (job->schedule && job->schedule->enabled && job->enabled &&
+              job->client == client && job->client->enabled) {
             if (!show_scheduled_preview(ua, job->schedule, overview,
                                         &max_date_len, time_to_check)) {
               job = NULL;
@@ -698,7 +705,7 @@ start_again:
        */
       LockRes(my_config);
       foreach_res (sched, R_SCHEDULE) {
-        if (!schedulegiven && !sched->enabled) { continue; }
+        if (!sched->enabled) { continue; }
 
         if (!ua->AclAccessOk(Schedule_ACL, sched->resource_name_)) { continue; }
 
