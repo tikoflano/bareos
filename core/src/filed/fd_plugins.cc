@@ -81,63 +81,46 @@ extern int SaveFile(JobControlRecord* jcr,
 /**
  * Forward referenced functions
  */
-static bRC bareosGetValue(bplugin_private_context* ctx,
-                          bVariable var,
-                          void* value);
-static bRC bareosSetValue(bplugin_private_context* ctx,
-                          bVariable var,
-                          void* value);
-static bRC bareosRegisterEvents(bplugin_private_context* ctx,
-                                int nr_events,
-                                ...);
-static bRC bareosUnRegisterEvents(bplugin_private_context* ctx,
-                                  int nr_events,
-                                  ...);
-static bRC bareosJobMsg(bplugin_private_context* ctx,
+static bRC bareosGetValue(PluginContext* ctx, bVariable var, void* value);
+static bRC bareosSetValue(PluginContext* ctx, bVariable var, void* value);
+static bRC bareosRegisterEvents(PluginContext* ctx, int nr_events, ...);
+static bRC bareosUnRegisterEvents(PluginContext* ctx, int nr_events, ...);
+static bRC bareosJobMsg(PluginContext* ctx,
                         const char* fname,
                         int line,
                         int type,
                         utime_t mtime,
                         const char* fmt,
                         ...);
-static bRC bareosDebugMsg(bplugin_private_context* ctx,
+static bRC bareosDebugMsg(PluginContext* ctx,
                           const char* fname,
                           int line,
                           int level,
                           const char* fmt,
                           ...);
-static void* bareosMalloc(bplugin_private_context* ctx,
+static void* bareosMalloc(PluginContext* ctx,
                           const char* fname,
                           int line,
                           size_t size);
-static void bareosFree(bplugin_private_context* ctx,
+static void bareosFree(PluginContext* ctx,
                        const char* file,
                        int line,
                        void* mem);
-static bRC bareosAddExclude(bplugin_private_context* ctx, const char* file);
-static bRC bareosAddInclude(bplugin_private_context* ctx, const char* file);
-static bRC bareosAddOptions(bplugin_private_context* ctx, const char* opts);
-static bRC bareosAddRegex(bplugin_private_context* ctx,
-                          const char* item,
-                          int type);
-static bRC bareosAddWild(bplugin_private_context* ctx,
-                         const char* item,
-                         int type);
-static bRC bareosNewOptions(bplugin_private_context* ctx);
-static bRC bareosNewInclude(bplugin_private_context* ctx);
-static bRC bareosNewPreInclude(bplugin_private_context* ctx);
+static bRC bareosAddExclude(PluginContext* ctx, const char* file);
+static bRC bareosAddInclude(PluginContext* ctx, const char* file);
+static bRC bareosAddOptions(PluginContext* ctx, const char* opts);
+static bRC bareosAddRegex(PluginContext* ctx, const char* item, int type);
+static bRC bareosAddWild(PluginContext* ctx, const char* item, int type);
+static bRC bareosNewOptions(PluginContext* ctx);
+static bRC bareosNewInclude(PluginContext* ctx);
+static bRC bareosNewPreInclude(PluginContext* ctx);
 static bool IsPluginCompatible(Plugin* plugin);
 static bool GetPluginName(JobControlRecord* jcr, char* cmd, int* ret);
-static bRC bareosCheckChanges(bplugin_private_context* ctx,
-                              struct save_pkt* sp);
-static bRC bareosAcceptFile(bplugin_private_context* ctx, struct save_pkt* sp);
-static bRC bareosSetSeenBitmap(bplugin_private_context* ctx,
-                               bool all,
-                               char* fname);
-static bRC bareosClearSeenBitmap(bplugin_private_context* ctx,
-                                 bool all,
-                                 char* fname);
-static bRC bareosGetInstanceCount(bplugin_private_context* ctx, int* ret);
+static bRC bareosCheckChanges(PluginContext* ctx, struct save_pkt* sp);
+static bRC bareosAcceptFile(PluginContext* ctx, struct save_pkt* sp);
+static bRC bareosSetSeenBitmap(PluginContext* ctx, bool all, char* fname);
+static bRC bareosClearSeenBitmap(PluginContext* ctx, bool all, char* fname);
+static bRC bareosGetInstanceCount(PluginContext* ctx, int* ret);
 
 /**
  * These will be plugged into the global pointer structure for the findlib.
@@ -199,8 +182,7 @@ struct b_plugin_ctx {
   Plugin* plugin; /* pointer to plugin of which this is an instance off */
 };
 
-static inline bool IsEventEnabled(bplugin_private_context* ctx,
-                                  bEventType eventType)
+static inline bool IsEventEnabled(PluginContext* ctx, bEventType eventType)
 {
   b_plugin_ctx* b_ctx;
 
@@ -212,7 +194,7 @@ static inline bool IsEventEnabled(bplugin_private_context* ctx,
   return BitIsSet(eventType, b_ctx->events);
 }
 
-static inline bool IsPluginDisabled(bplugin_private_context* ctx)
+static inline bool IsPluginDisabled(PluginContext* ctx)
 {
   b_plugin_ctx* b_ctx;
 
@@ -224,7 +206,7 @@ static inline bool IsPluginDisabled(bplugin_private_context* ctx)
   return b_ctx->disabled;
 }
 
-static bool IsCtxGood(bplugin_private_context* ctx,
+static bool IsCtxGood(PluginContext* ctx,
                       JobControlRecord*& jcr,
                       b_plugin_ctx*& bctx)
 {
@@ -277,7 +259,7 @@ static bool for_thIsPlugin(Plugin* plugin, char* name, int len)
 static inline bool trigger_plugin_event(JobControlRecord* jcr,
                                         bEventType eventType,
                                         bEvent* event,
-                                        bplugin_private_context* ctx,
+                                        PluginContext* ctx,
                                         void* value,
                                         alist* plugin_ctx_list,
                                         int* index,
@@ -371,7 +353,7 @@ bRC GeneratePluginEvent(JobControlRecord* jcr,
   int len = 0;
   bool call_if_canceled = false;
   restore_object_pkt* rop;
-  bplugin_private_context* ctx = nullptr;
+  PluginContext* ctx = nullptr;
   alist* plugin_ctx_list;
   bRC rc = bRC_OK;
 
@@ -493,7 +475,7 @@ bail_out:
  */
 bool PluginCheckFile(JobControlRecord* jcr, char* fname)
 {
-  bplugin_private_context* ctx = nullptr;
+  PluginContext* ctx = nullptr;
   alist* plugin_ctx_list;
   int retval = bRC_OK;
 
@@ -609,7 +591,7 @@ bRC PluginOptionHandleFile(JobControlRecord* jcr,
   bRC retval = bRC_Core;
   bEvent event;
   bEventType eventType;
-  bplugin_private_context* ctx = nullptr;
+  PluginContext* ctx = nullptr;
   alist* plugin_ctx_list;
 
   cmd = ff_pkt->plugin;
@@ -683,7 +665,7 @@ int PluginSave(JobControlRecord* jcr, FindFilesPacket* ff_pkt, bool top_level)
   bRC retval;
   char* cmd;
   bEvent event;
-  bplugin_private_context* ctx = nullptr;
+  PluginContext* ctx = nullptr;
   struct save_pkt sp;
   bEventType eventType;
   PoolMem fname(PM_FNAME);
@@ -931,7 +913,7 @@ int PluginEstimate(JobControlRecord* jcr,
   bEventType eventType;
   PoolMem fname(PM_FNAME);
   PoolMem link(PM_FNAME);
-  bplugin_private_context* ctx = nullptr;
+  PluginContext* ctx = nullptr;
   alist* plugin_ctx_list;
   Attributes attr;
 
@@ -1136,7 +1118,7 @@ bool PluginNameStream(JobControlRecord* jcr, char* name)
   char* p = name;
   bool start;
   bool retval = true;
-  bplugin_private_context* ctx = nullptr;
+  PluginContext* ctx = nullptr;
   alist* plugin_ctx_list;
 
   Dmsg1(debuglevel, "Read plugin stream string=%s\n", name);
@@ -1266,7 +1248,7 @@ int PluginCreateFile(JobControlRecord* jcr,
   int status;
   Plugin* plugin;
   struct restore_pkt rp;
-  bplugin_private_context* ctx = jcr->plugin_ctx;
+  PluginContext* ctx = jcr->plugin_ctx;
   b_plugin_ctx* b_ctx = (b_plugin_ctx*)jcr->plugin_ctx->core_private_context;
 
   if (!ctx || !SetCmdPlugin(bfd, jcr) || jcr->IsJobCanceled()) {
@@ -1806,11 +1788,11 @@ static bool IsPluginCompatible(Plugin* plugin)
 /**
  * Instantiate a new plugin instance.
  */
-static inline bplugin_private_context* instantiate_plugin(JobControlRecord* jcr,
-                                                          Plugin* plugin,
-                                                          char instance)
+static inline PluginContext* instantiate_plugin(JobControlRecord* jcr,
+                                                Plugin* plugin,
+                                                char instance)
 {
-  bplugin_private_context* ctx;
+  PluginContext* ctx;
   b_plugin_ctx* b_ctx;
 
   b_ctx = (b_plugin_ctx*)malloc(sizeof(b_plugin_ctx));
@@ -1818,7 +1800,7 @@ static inline bplugin_private_context* instantiate_plugin(JobControlRecord* jcr,
   b_ctx->jcr = jcr;
   b_ctx->plugin = plugin;
 
-  ctx = (bplugin_private_context*)malloc(sizeof(bplugin_private_context));
+  ctx = (PluginContext*)malloc(sizeof(PluginContext));
   ctx->instance = instance;
   ctx->plugin = plugin;
   ctx->core_private_context = (void*)b_ctx;
@@ -1873,7 +1855,7 @@ void NewPlugins(JobControlRecord* jcr)
  */
 void FreePlugins(JobControlRecord* jcr)
 {
-  bplugin_private_context* ctx = nullptr;
+  PluginContext* ctx = nullptr;
 
   if (!fd_plugin_list || !jcr->plugin_ctx_list) { return; }
 
@@ -2082,9 +2064,7 @@ static boffset_t MyPluginBlseek(BareosWinFilePacket* bfd,
  *
  * ==============================================================
  */
-static bRC bareosGetValue(bplugin_private_context* ctx,
-                          bVariable var,
-                          void* value)
+static bRC bareosGetValue(PluginContext* ctx, bVariable var, void* value)
 {
   JobControlRecord* jcr = NULL;
   if (!value) { return bRC_Error; }
@@ -2196,9 +2176,7 @@ static bRC bareosGetValue(bplugin_private_context* ctx,
   return bRC_OK;
 }
 
-static bRC bareosSetValue(bplugin_private_context* ctx,
-                          bVariable var,
-                          void* value)
+static bRC bareosSetValue(PluginContext* ctx, bVariable var, void* value)
 {
   JobControlRecord* jcr;
 
@@ -2221,9 +2199,7 @@ static bRC bareosSetValue(bplugin_private_context* ctx,
   return bRC_OK;
 }
 
-static bRC bareosRegisterEvents(bplugin_private_context* ctx,
-                                int nr_events,
-                                ...)
+static bRC bareosRegisterEvents(PluginContext* ctx, int nr_events, ...)
 {
   int i;
   va_list args;
@@ -2247,11 +2223,11 @@ static bRC bareosRegisterEvents(bplugin_private_context* ctx,
 /**
  * Get the number of instaces instantiated of a certain plugin.
  */
-static bRC bareosGetInstanceCount(bplugin_private_context* ctx, int* ret)
+static bRC bareosGetInstanceCount(PluginContext* ctx, int* ret)
 {
   int cnt;
   JobControlRecord *jcr, *njcr;
-  bplugin_private_context* nctx;
+  PluginContext* nctx;
   b_plugin_ctx* bctx;
   bRC retval = bRC_Error;
 
@@ -2278,9 +2254,7 @@ bail_out:
   return retval;
 }
 
-static bRC bareosUnRegisterEvents(bplugin_private_context* ctx,
-                                  int nr_events,
-                                  ...)
+static bRC bareosUnRegisterEvents(PluginContext* ctx, int nr_events, ...)
 {
   int i;
   va_list args;
@@ -2301,7 +2275,7 @@ static bRC bareosUnRegisterEvents(bplugin_private_context* ctx,
   return bRC_OK;
 }
 
-static bRC bareosJobMsg(bplugin_private_context* ctx,
+static bRC bareosJobMsg(PluginContext* ctx,
                         const char* fname,
                         int line,
                         int type,
@@ -2327,7 +2301,7 @@ static bRC bareosJobMsg(bplugin_private_context* ctx,
   return bRC_OK;
 }
 
-static bRC bareosDebugMsg(bplugin_private_context* ctx,
+static bRC bareosDebugMsg(PluginContext* ctx,
                           const char* fname,
                           int line,
                           int level,
@@ -2345,7 +2319,7 @@ static bRC bareosDebugMsg(bplugin_private_context* ctx,
   return bRC_OK;
 }
 
-static void* bareosMalloc(bplugin_private_context* ctx,
+static void* bareosMalloc(PluginContext* ctx,
                           const char* fname,
                           int line,
                           size_t size)
@@ -2353,7 +2327,7 @@ static void* bareosMalloc(bplugin_private_context* ctx,
   return malloc(size);
 }
 
-static void bareosFree(bplugin_private_context* ctx,
+static void bareosFree(PluginContext* ctx,
                        const char* fname,
                        int line,
                        void* mem)
@@ -2364,7 +2338,7 @@ static void bareosFree(bplugin_private_context* ctx,
 /**
  * Let the plugin define files/directories to be excluded from the main backup.
  */
-static bRC bareosAddExclude(bplugin_private_context* ctx, const char* fname)
+static bRC bareosAddExclude(PluginContext* ctx, const char* fname)
 {
   JobControlRecord* jcr;
   findIncludeExcludeItem* old;
@@ -2405,7 +2379,7 @@ static bRC bareosAddExclude(bplugin_private_context* ctx, const char* fname)
 /**
  * Let the plugin define files/directories to be excluded from the main backup.
  */
-static bRC bareosAddInclude(bplugin_private_context* ctx, const char* fname)
+static bRC bareosAddInclude(PluginContext* ctx, const char* fname)
 {
   JobControlRecord* jcr;
   findIncludeExcludeItem* old;
@@ -2440,7 +2414,7 @@ static bRC bareosAddInclude(bplugin_private_context* ctx, const char* fname)
   return bRC_OK;
 }
 
-static bRC bareosAddOptions(bplugin_private_context* ctx, const char* opts)
+static bRC bareosAddOptions(PluginContext* ctx, const char* opts)
 {
   JobControlRecord* jcr;
   b_plugin_ctx* bctx;
@@ -2454,9 +2428,7 @@ static bRC bareosAddOptions(bplugin_private_context* ctx, const char* opts)
   return bRC_OK;
 }
 
-static bRC bareosAddRegex(bplugin_private_context* ctx,
-                          const char* item,
-                          int type)
+static bRC bareosAddRegex(PluginContext* ctx, const char* item, int type)
 {
   JobControlRecord* jcr;
   b_plugin_ctx* bctx;
@@ -2470,9 +2442,7 @@ static bRC bareosAddRegex(bplugin_private_context* ctx,
   return bRC_OK;
 }
 
-static bRC bareosAddWild(bplugin_private_context* ctx,
-                         const char* item,
-                         int type)
+static bRC bareosAddWild(PluginContext* ctx, const char* item, int type)
 {
   JobControlRecord* jcr;
   b_plugin_ctx* bctx;
@@ -2486,7 +2456,7 @@ static bRC bareosAddWild(bplugin_private_context* ctx,
   return bRC_OK;
 }
 
-static bRC bareosNewOptions(bplugin_private_context* ctx)
+static bRC bareosNewOptions(PluginContext* ctx)
 {
   JobControlRecord* jcr;
   b_plugin_ctx* bctx;
@@ -2497,7 +2467,7 @@ static bRC bareosNewOptions(bplugin_private_context* ctx)
   return bRC_OK;
 }
 
-static bRC bareosNewInclude(bplugin_private_context* ctx)
+static bRC bareosNewInclude(PluginContext* ctx)
 {
   JobControlRecord* jcr;
   b_plugin_ctx* bctx;
@@ -2508,7 +2478,7 @@ static bRC bareosNewInclude(bplugin_private_context* ctx)
   return bRC_OK;
 }
 
-static bRC bareosNewPreInclude(bplugin_private_context* ctx)
+static bRC bareosNewPreInclude(PluginContext* ctx)
 {
   JobControlRecord* jcr;
   b_plugin_ctx* bctx;
@@ -2525,7 +2495,7 @@ static bRC bareosNewPreInclude(bplugin_private_context* ctx)
 /**
  * Check if a file have to be backed up using Accurate code
  */
-static bRC bareosCheckChanges(bplugin_private_context* ctx, struct save_pkt* sp)
+static bRC bareosCheckChanges(PluginContext* ctx, struct save_pkt* sp)
 {
   JobControlRecord* jcr;
   b_plugin_ctx* bctx;
@@ -2576,7 +2546,7 @@ bail_out:
 /**
  * Check if a file would be saved using current Include/Exclude code
  */
-static bRC bareosAcceptFile(bplugin_private_context* ctx, struct save_pkt* sp)
+static bRC bareosAcceptFile(PluginContext* ctx, struct save_pkt* sp)
 {
   JobControlRecord* jcr;
   FindFilesPacket* ff_pkt;
@@ -2604,9 +2574,7 @@ bail_out:
 /**
  * Manipulate the accurate seen bitmap for setting bits
  */
-static bRC bareosSetSeenBitmap(bplugin_private_context* ctx,
-                               bool all,
-                               char* fname)
+static bRC bareosSetSeenBitmap(PluginContext* ctx, bool all, char* fname)
 {
   JobControlRecord* jcr;
   b_plugin_ctx* bctx;
@@ -2634,9 +2602,7 @@ bail_out:
 /**
  * Manipulate the accurate seen bitmap for clearing bits
  */
-static bRC bareosClearSeenBitmap(bplugin_private_context* ctx,
-                                 bool all,
-                                 char* fname)
+static bRC bareosClearSeenBitmap(PluginContext* ctx, bool all, char* fname)
 {
   JobControlRecord* jcr;
   b_plugin_ctx* bctx;
