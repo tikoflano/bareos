@@ -3,7 +3,7 @@
 
    Copyright (C) 2007-2012 Free Software Foundation Europe e.V.
    Copyright (C) 2011-2012 Planets Communications B.V.
-   Copyright (C) 2013-2019 Bareos GmbH & Co. KG
+   Copyright (C) 2013-2020 Bareos GmbH & Co. KG
 
    This program is Free Software; you can redistribute it and/or
    modify it under the terms of version three of the GNU Affero General Public
@@ -136,7 +136,8 @@ static boffset_t MyPluginBlseek(BareosWinFilePacket* bfd,
                                 int whence);
 
 /* Bareos info */
-static bInfo binfo = {sizeof(bInfo), FD_PLUGIN_INTERFACE_VERSION};
+static Core_PluginApiDefinition binfo = {sizeof(Core_PluginApiDefinition),
+                                         FD_PLUGIN_INTERFACE_VERSION};
 
 /* Bareos entry points */
 static bFuncs bfuncs = {sizeof(bFuncs),
