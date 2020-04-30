@@ -3,7 +3,7 @@
 
    Copyright (C) 2000-2012 Free Software Foundation Europe e.V.
    Copyright (C) 2011-2012 Planets Communications B.V.
-   Copyright (C) 2013-2019 Bareos GmbH & Co. KG
+   Copyright (C) 2013-2020 Bareos GmbH & Co. KG
 
    This program is Free Software; you can redistribute it and/or
    modify it under the terms of version three of the GNU Affero General Public
@@ -49,7 +49,7 @@ class htable;
 class JobControlRecord;
 
 struct AttributesDbRecord;
-struct bpContext;
+struct bplugin_private_context;
 struct JobControlRecordPrivate;
 struct VolumeSessionInfo;
 
@@ -220,7 +220,7 @@ class JobControlRecord {
   guid_list* id_list{};     /**< User/group id to name list */
 
   alist* plugin_ctx_list{}; /**< List of contexts for plugins */
-  bpContext* plugin_ctx{};  /**< Current plugin context */
+  bplugin_private_context* plugin_ctx{};  /**< Current plugin context */
   POOLMEM* comment{};       /**< Comment for this Job */
   int64_t max_bandwidth{};  /**< Bandwidth limit for this Job */
   htable* path_list{};      /**< Directory list (used by findlib) */

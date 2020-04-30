@@ -65,20 +65,30 @@ using namespace storagedaemon;
 /**
  * Forward referenced functions
  */
-static bRC newPlugin(bpContext* ctx);
-static bRC freePlugin(bpContext* ctx);
-static bRC getPluginValue(bpContext* ctx, pVariable var, void* value);
-static bRC setPluginValue(bpContext* ctx, pVariable var, void* value);
-static bRC handlePluginEvent(bpContext* ctx, bsdEvent* event, void* value);
-static bRC handleJobEnd(bpContext* ctx);
-static bRC setup_record_translation(bpContext* ctx, void* value);
-static bRC handle_read_translation(bpContext* ctx, void* value);
-static bRC handle_write_translation(bpContext* ctx, void* value);
+static bRC newPlugin(bplugin_private_context* ctx);
+static bRC freePlugin(bplugin_private_context* ctx);
+static bRC getPluginValue(bplugin_private_context* ctx,
+                          pVariable var,
+                          void* value);
+static bRC setPluginValue(bplugin_private_context* ctx,
+                          pVariable var,
+                          void* value);
+static bRC handlePluginEvent(bplugin_private_context* ctx,
+                             bsdEvent* event,
+                             void* value);
+static bRC handleJobEnd(bplugin_private_context* ctx);
+static bRC setup_record_translation(bplugin_private_context* ctx, void* value);
+static bRC handle_read_translation(bplugin_private_context* ctx, void* value);
+static bRC handle_write_translation(bplugin_private_context* ctx, void* value);
 
-static bool SetupAutoDeflation(bpContext* ctx, DeviceControlRecord* dcr);
-static bool SetupAutoInflation(bpContext* ctx, DeviceControlRecord* dcr);
-static bool AutoDeflateRecord(bpContext* ctx, DeviceControlRecord* dcr);
-static bool AutoInflateRecord(bpContext* ctx, DeviceControlRecord* dcr);
+static bool SetupAutoDeflation(bplugin_private_context* ctx,
+                               DeviceControlRecord* dcr);
+static bool SetupAutoInflation(bplugin_private_context* ctx,
+                               DeviceControlRecord* dcr);
+static bool AutoDeflateRecord(bplugin_private_context* ctx,
+                              DeviceControlRecord* dcr);
+static bool AutoInflateRecord(bplugin_private_context* ctx,
+                              DeviceControlRecord* dcr);
 
 /**
  * Is the SD in compatible mode or not.
@@ -170,7 +180,7 @@ bRC unloadPlugin() { return bRC_OK; }
  *
  * Create a new instance of the plugin i.e. allocate our private storage
  */
-static bRC newPlugin(bpContext* ctx)
+static bRC newPlugin(bplugin_private_context* ctx)
 {
   int JobId = 0;
   struct plugin_ctx* p_ctx;
@@ -182,7 +192,7 @@ static bRC newPlugin(bpContext* ctx)
   if (!p_ctx) { return bRC_Error; }
 
   memset(p_ctx, 0, sizeof(struct plugin_ctx));
-  ctx->pContext = (void*)p_ctx; /* set our context pointer */
+  ctx->plugin_private_context = (void*)p_ctx; /* set our context pointer */
 
   /*
    * Only register plugin events we are interested in.
@@ -203,10 +213,10 @@ static bRC newPlugin(bpContext* ctx)
 /**
  * Free a plugin instance, i.e. release our private storage
  */
-static bRC freePlugin(bpContext* ctx)
+static bRC freePlugin(bplugin_private_context* ctx)
 {
   int JobId = 0;
-  struct plugin_ctx* p_ctx = (struct plugin_ctx*)ctx->pContext;
+  struct plugin_ctx* p_ctx = (struct plugin_ctx*)ctx->plugin_private_context;
 
   bareos_core_functions->getBareosValue(ctx, bsdVarJobId, (void*)&JobId);
   Dmsg(ctx, debuglevel, "autoxflate-sd: freePlugin JobId=%d\n", JobId);
@@ -217,7 +227,7 @@ static bRC freePlugin(bpContext* ctx)
   }
 
   if (p_ctx) { free(p_ctx); }
-  ctx->pContext = NULL;
+  ctx->plugin_private_context = NULL;
 
   return bRC_OK;
 }
@@ -225,7 +235,9 @@ static bRC freePlugin(bpContext* ctx)
 /**
  * Return some plugin value (none defined)
  */
-static bRC getPluginValue(bpContext* ctx, pVariable var, void* value)
+static bRC getPluginValue(bplugin_private_context* ctx,
+                          pVariable var,
+                          void* value)
 {
   Dmsg(ctx, debuglevel, "autoxflate-sd: getPluginValue var=%d\n", var);
 
@@ -235,7 +247,9 @@ static bRC getPluginValue(bpContext* ctx, pVariable var, void* value)
 /**
  * Set a plugin value (none defined)
  */
-static bRC setPluginValue(bpContext* ctx, pVariable var, void* value)
+static bRC setPluginValue(bplugin_private_context* ctx,
+                          pVariable var,
+                          void* value)
 {
   Dmsg(ctx, debuglevel, "autoxflate-sd: setPluginValue var=%d\n", var);
 
@@ -245,7 +259,9 @@ static bRC setPluginValue(bpContext* ctx, pVariable var, void* value)
 /**
  * Handle an event that was generated in Bareos
  */
-static bRC handlePluginEvent(bpContext* ctx, bsdEvent* event, void* value)
+static bRC handlePluginEvent(bplugin_private_context* ctx,
+                             bsdEvent* event,
+                             void* value)
 {
   switch (event->eventType) {
     case bsdEventSetupRecordTranslation:
@@ -268,9 +284,9 @@ static bRC handlePluginEvent(bpContext* ctx, bsdEvent* event, void* value)
 /**
  * At end of job report how inflate/deflate ratio was.
  */
-static bRC handleJobEnd(bpContext* ctx)
+static bRC handleJobEnd(bplugin_private_context* ctx)
 {
-  struct plugin_ctx* p_ctx = (struct plugin_ctx*)ctx->pContext;
+  struct plugin_ctx* p_ctx = (struct plugin_ctx*)ctx->plugin_private_context;
 
   if (!p_ctx) { goto bail_out; }
 
@@ -295,7 +311,7 @@ bail_out:
   return bRC_OK;
 }
 
-static bRC setup_record_translation(bpContext* ctx, void* value)
+static bRC setup_record_translation(bplugin_private_context* ctx, void* value)
 {
   DeviceControlRecord* dcr;
   bool did_setup = false;
@@ -398,7 +414,7 @@ static bRC setup_record_translation(bpContext* ctx, void* value)
   return bRC_OK;
 }
 
-static bRC handle_read_translation(bpContext* ctx, void* value)
+static bRC handle_read_translation(bplugin_private_context* ctx, void* value)
 {
   DeviceControlRecord* dcr;
   bool swap_record = false;
@@ -435,7 +451,7 @@ static bRC handle_read_translation(bpContext* ctx, void* value)
   return bRC_OK;
 }
 
-static bRC handle_write_translation(bpContext* ctx, void* value)
+static bRC handle_write_translation(bplugin_private_context* ctx, void* value)
 {
   DeviceControlRecord* dcr;
   bool swap_record = false;
@@ -475,7 +491,8 @@ static bRC handle_write_translation(bpContext* ctx, void* value)
 /**
  * Setup deflate for auto deflate of data streams.
  */
-static bool SetupAutoDeflation(bpContext* ctx, DeviceControlRecord* dcr)
+static bool SetupAutoDeflation(bplugin_private_context* ctx,
+                               DeviceControlRecord* dcr)
 {
   JobControlRecord* jcr = dcr->jcr;
   bool retval = false;
@@ -570,7 +587,8 @@ bail_out:
 /**
  * Setup inflation for auto inflation of data streams.
  */
-static bool SetupAutoInflation(bpContext* ctx, DeviceControlRecord* dcr)
+static bool SetupAutoInflation(bplugin_private_context* ctx,
+                               DeviceControlRecord* dcr)
 {
   JobControlRecord* jcr = dcr->jcr;
   uint32_t decompress_buf_size;
@@ -604,7 +622,8 @@ static bool SetupAutoInflation(bpContext* ctx, DeviceControlRecord* dcr)
  * Perform automatic compression of certain stream types when enabled in the
  * config.
  */
-static bool AutoDeflateRecord(bpContext* ctx, DeviceControlRecord* dcr)
+static bool AutoDeflateRecord(bplugin_private_context* ctx,
+                              DeviceControlRecord* dcr)
 {
   ser_declare;
   bool retval = false;
@@ -615,7 +634,7 @@ static bool AutoDeflateRecord(bpContext* ctx, DeviceControlRecord* dcr)
   bool intermediate_value = false;
   unsigned int max_compression_length = 0;
 
-  p_ctx = (struct plugin_ctx*)ctx->pContext;
+  p_ctx = (struct plugin_ctx*)ctx->plugin_private_context;
   if (!p_ctx) { goto bail_out; }
 
   /*
@@ -764,14 +783,15 @@ bail_out:
  * Inflate (uncompress) the content of a read record and return the data as an
  * alternative datastream.
  */
-static bool AutoInflateRecord(bpContext* ctx, DeviceControlRecord* dcr)
+static bool AutoInflateRecord(bplugin_private_context* ctx,
+                              DeviceControlRecord* dcr)
 {
   DeviceRecord *rec, *nrec;
   bool retval = false;
   struct plugin_ctx* p_ctx;
   bool intermediate_value = false;
 
-  p_ctx = (struct plugin_ctx*)ctx->pContext;
+  p_ctx = (struct plugin_ctx*)ctx->plugin_private_context;
   if (!p_ctx) { goto bail_out; }
 
   /*
