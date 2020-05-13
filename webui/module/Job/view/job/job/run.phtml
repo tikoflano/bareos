@@ -186,26 +186,30 @@ $this->headTitle($title);
       return params.join('&');
    }
 
+   function hasNextPoolOption() {
+      return $('#level').selectpicker('val') == "VirtualFull" || 
+         $('#type').val() == "Copy" ||
+         $('#type').val() == "Migrate"
+   }
+
    $('#job').change(function(event) {
       window.location.href = window.location.pathname + '?' + updateQueryParams('jobname', this.value);
    });
 
    $('#pool').change(function(event) {
-      if($('#level').selectpicker('val') == "VirtualFull") {
+      if(hasNextPoolOption()) {
          $('#nextpool').selectpicker('val', pool_nextpool_mapping[$('#pool').selectpicker('val')]);
-         $("#nextpool").parents(".form-group").fadeToggle(100).fadeToggle(100).fadeToggle(100).fadeToggle(100);
       }
    });
 
    $('#level').change(function() {
-      if($('#level').selectpicker('val') == "VirtualFull") {
-         $('#nextpool').prop('disabled', false);
+      if(hasNextPoolOption()) {
+         $("#nextpool").parents(".form-group").fadeIn();
          $('#pool').change();
       } else {
-         $('#nextpool').prop('disabled', true);
+         $("#nextpool").parents(".form-group").hide();
          $('#nextpool').selectpicker('val', '');
       }
-      $('#nextpool').selectpicker('refresh');
    });
 
    $(function() {
@@ -214,7 +218,7 @@ $this->headTitle($title);
          sideBySide: true
       });
 
-      // This will enable/disable the Next Pool select based on the Level value
+      // This will enable/disable the Next Pool select based on the Level value on load
       $('#level').change();
    });
 
