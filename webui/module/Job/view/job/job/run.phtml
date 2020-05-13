@@ -198,7 +198,11 @@ $this->headTitle($title);
 
    $('#pool').change(function(event) {
       if(hasNextPoolOption()) {
-         $('#nextpool').selectpicker('val', pool_nextpool_mapping[$('#pool').selectpicker('val')]);
+         let nextpool = pool_nextpool_mapping[$('#pool').selectpicker('val')];
+
+         if(nextpool) {
+            $('#nextpool').selectpicker('val', nextpool);
+         }
       }
    });
 
