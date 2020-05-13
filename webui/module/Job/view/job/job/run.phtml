@@ -105,6 +105,13 @@ $this->headTitle($title);
    </div>
 
    <div class="form-group">
+      <label class="control-label col-md-2"><?php echo $this->formLabel($form->get('nextpool')); ?></label>
+      <div class="control-input col-md-6">
+         <?php echo $this->formSelect($form->get('nextpool')); ?>
+      </div>
+   </div>
+
+   <div class="form-group">
       <label class="control-label col-md-2"><?php echo $this->formLabel($form->get('priority')); ?></label>
       <div class="control-input col-md-6">
          <?php echo $this->formInput($form->get('priority')); ?>
@@ -162,6 +169,8 @@ $this->headTitle($title);
 
 <script type="text/javascript">
 
+   let pool_nextpool_mapping = JSON.parse('<?php echo $form->getPoolNextPoolMapping(); ?>');
+
    function updateQueryParams(k, v) {
       var p = [];
       var params = [];
@@ -181,11 +190,32 @@ $this->headTitle($title);
       window.location.href = window.location.pathname + '?' + updateQueryParams('jobname', this.value);
    });
 
+   $('#pool').change(function(event) {
+      if($('#level').selectpicker('val') == "VirtualFull") {
+         $('#nextpool').selectpicker('val', pool_nextpool_mapping[$('#pool').selectpicker('val')]);
+         $("#nextpool").parents(".form-group").fadeToggle(100).fadeToggle(100).fadeToggle(100).fadeToggle(100);
+      }
+   });
+
+   $('#level').change(function() {
+      if($('#level').selectpicker('val') == "VirtualFull") {
+         $('#nextpool').prop('disabled', false);
+         $('#pool').change();
+      } else {
+         $('#nextpool').prop('disabled', true);
+         $('#nextpool').selectpicker('val', '');
+      }
+      $('#nextpool').selectpicker('refresh');
+   });
+
    $(function() {
       $('#when-datepicker').datetimepicker({
          format: 'YYYY-MM-DD HH:mm:ss',
          sideBySide: true
       });
+
+      // This will enable/disable the Next Pool select based on the Level value
+      $('#level').change();
    });
 
 </script>
