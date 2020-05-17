@@ -490,18 +490,11 @@ function formatFilesetName(value, row, index, basePath) {
 function formatLogMessage(value) {
    var msg = (value).replace(/\n/g, "<br />");
 
-   if(msg.search("Error") > 0) {
-      return msg.replace(/Error/g, '<span class="bg-danger text-danger">Error</span>');
-   }
-   else if(msg.search("error") > 0) {
-      return msg.replace(/error/g, '<span class="bg-danger text-danger">error</span>');
-   }
-   else if(msg.search("Warning") > 0) {
-      return msg.replace(/Warning/g, '<span class="bg-warning text-warning">Warning</span>');
-   }
-   else {
-      return msg;
-   }
+   msg = msg.replace(/(e)rror/gi, '<span class="bg-danger text-danger">$1rror</span>');
+   msg = msg.replace(/(w)arning/gi, '<span class="bg-warning text-warning">$1arning</span>');
+   msg = msg.replace(/jobid=([0-9]*)/gi, '<a class="bg-info text-info" href="<?php echo $this->url(\'job\', array(\'action\' => \'details\'), null); ?>$1">JobId=$1</a>');
+
+   return msg;
 }
 
 function formatAutochangerStatus(value) {
