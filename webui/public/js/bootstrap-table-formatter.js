@@ -492,7 +492,7 @@ function formatLogMessage(value) {
 
    msg = msg.replace(/(e)rror/gi, '<span class="bg-danger text-danger">$1rror</span>');
    msg = msg.replace(/(w)arning/gi, '<span class="bg-warning text-warning">$1arning</span>');
-   msg = msg.replace(/jobid=([0-9]*)/gi, '<a class="bg-info text-info" href="<?php echo $this->url(\'job\', array(\'action\' => \'details\'), null); ?>$1">JobId=$1</a>');
+   msg = msg.replace(/jobid=([0-9]*)/gi, '<a class="bg-info text-info" href="' +  basePath + '/job/details/$1">JobId=$1</a>');
 
    return msg;
 }
